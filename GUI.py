@@ -2,7 +2,14 @@ from tkinter import *
 from tkinter.filedialog import askopenfilename
 from tkinter.messagebox import showerror
 
-class myUI(Frame):
+class Singleton(type):
+    _instances = {}
+    def __call__(cls, *args, **kwargs):
+        if cls not in cls._instances:
+            cls._instances[cls] = super(Singleton, cls).__call__(*args, **kwargs)
+        return cls._instances[cls]
+
+class myUI(Frame, metaclass=Singleton):
     def __init__(self):
         Frame.__init__(self)
         self.master.title("ICAOcheck")
@@ -20,5 +27,5 @@ class myUI(Frame):
     def load_file(self):
         self.filepath.set(askopenfilename(initialdir = "C:/",title = "Load an Image file",filetypes = (("image files","*.jpg;*.png;*.bmp;*.tif"),("all files","*.*"))))
 
-    def get_path(self):
+    def get_filepath(self):
         return self.filepath
