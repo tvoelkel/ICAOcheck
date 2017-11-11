@@ -1,6 +1,8 @@
 from tkinter import *
 from tkinter.filedialog import askopenfilename
 from tkinter.messagebox import showerror
+from PIL import Image
+import os
 
 class Singleton(type):
     _instances = {}
@@ -12,20 +14,33 @@ class Singleton(type):
 class myUI(Frame, metaclass=Singleton):
     def __init__(self):
         Frame.__init__(self)
+        #variables
+        self.filepath_label = StringVar()
+        self.filepath = ""
+        self.file_list = []
+
+        #define Window properties
         self.master.title("ICAOcheck")
         self.master.minsize(width=666, height=666)
         self.master.rowconfigure(5, weight=1)
         self.master.columnconfigure(5, weight=1)
         self.grid(sticky=W+E+N+S)
-        self.filepath = StringVar()
 
-        self.label = Label(self, textvariable = self.filepath)
+        #define Window objects
+        self.label = Label(self, textvariable = self.filepath_label)
         self.label.grid(row=0, column=1, sticky=W)
-        self.button = Button(self, text="Browse", command=self.load_file, width=10)
+        self.button = Button(self, text="Browse", command=self.load_files, width=10)
         self.button.grid(row=0, column=0, sticky=W)
 
-    def load_file(self):
-        self.filepath.set(askopenfilename(initialdir = "C:/",title = "Load an Image file",filetypes = (("image files","*.jpg;*.png;*.bmp;*.tif"),("all files","*.*"))))
+    def load_files(self):
+        #load all files in the same directory as the selected file
+        self.filepath = askopenfilename(initialdir = "C:/",title = "Load an Image file",filetypes = (("Image files","*.jpg;*.png;*.bmp;*.tif"),("All files","*.*")))
+        dirpath = self.filepath.rsplit('/',1)[0]+'/'
+        self.filepath_label.set(dirpath)
 
-    def get_filepath(self):
-        return self.filepath
+        #add files to list
+        for filename in os.listdir(dirpath):
+            self.file_list.append(Image.open(dirpath+filename))
+
+    def get_filelist(self):
+        return file_list
