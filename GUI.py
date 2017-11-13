@@ -1,8 +1,10 @@
 from tkinter import *
 from tkinter.filedialog import askopenfilename
 from tkinter.messagebox import showerror
-from PIL import Image
+from matchableImage import MatchableImage
+
 import os
+import cv2
 
 class Singleton(type):
     _instances = {}
@@ -38,9 +40,6 @@ class myUI(Frame, metaclass=Singleton):
         dirpath = self.filepath.rsplit('/',1)[0]+'/'
         self.filepath_label.set(dirpath)
 
-        #add files to list
+        #add files to filelist
         for filename in os.listdir(dirpath):
-            self.file_list.append(Image.open(dirpath+filename))
-
-    def get_filelist(self):
-        return file_list
+            self.file_list.append(MatchableImage(dirpath, filename))
