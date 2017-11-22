@@ -19,6 +19,7 @@ class myUI(Frame, metaclass=Singleton):
         Frame.__init__(self)
         #variables
         self.filepath_label = StringVar()
+        self.score_label = StringVar()
         self.filenumber_label = StringVar()
         self.filepath = ""
         self.file_list = []
@@ -58,6 +59,8 @@ class myUI(Frame, metaclass=Singleton):
 
     def check_images(self):
         i = 0
+        if(self.file_list != []):
+            self.score_label.set("Result:")
         #ToDo
 
     def switchDisplayedImage(self, imageOffset):
@@ -76,7 +79,7 @@ class myUI(Frame, metaclass=Singleton):
         self.imageWindow.grid(row = 7, column = 1, rowspan = 5, columnspan = 5, sticky=W+N)
 
         #display matching results for currently displayed image
-        self.scoreLabel = Label(self, text = "Result:")
+        self.scoreLabel = Label(self, textvariable = self.score_label)
         self.scoreLabel.grid(row = 7, column = 6, sticky = E+N)
 
         #draw label that shows the image we are currently seeing
