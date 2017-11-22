@@ -8,5 +8,5 @@ class MatchableImage:
 
         #initialize a list to contain whether an Image is rule-conform or not
         #initialize a list to contain all matching scores
-        self.matching_result = []
+        self.matching_type_list = []
         self.matching_score_list = []

@@ -4,6 +4,9 @@ from tkinter.messagebox import showerror
 from matchableImage import MatchableImage
 from PIL import Image, ImageTk
 
+from task_Expression import checkExpression
+from task_Color import checkColor
+
 import os
 import cv2
 
@@ -50,6 +53,9 @@ class myUI(Frame, metaclass=Singleton):
         dirpath = self.filepath.rsplit('/',1)[0]+'/'
         self.filepath_label.set(dirpath)
 
+        #initialize file list
+        self.file_list = []
+
         #add files to filelist
         for filename in os.listdir(dirpath):
             self.file_list.append(MatchableImage(dirpath, filename))
@@ -58,10 +64,15 @@ class myUI(Frame, metaclass=Singleton):
             self.display_result(self.file_list[0])
 
     def check_images(self):
-        i = 0
         if(self.file_list != []):
-            self.score_label.set("Result:")
+            #self.score_label.set("Result:")
+            checkExpression(self.file_list)
+            checkColor(self.file_list)
+
+
+            self.display_result(self.file_list[self.currentDisplayedResult-1])
         #ToDo
+
 
     def switchDisplayedImage(self, imageOffset):
         if ((self.currentDisplayedResult + imageOffset) <= len(self.file_list)) and ((self.currentDisplayedResult + imageOffset) >= 1):
@@ -96,4 +107,16 @@ class myUI(Frame, metaclass=Singleton):
         if self.currentDisplayedResult < len(self.file_list):
             self.forth = Button(self, text=">", command = lambda: self.switchDisplayedImage(1))
             self.forth.grid(row=5, column=3, sticky=E)
+
+        #draw matching results
+        typeLabelList = []
+        scoreLabelList = []
+        i = 0
+        for result in matchableImg.matching_type_list:
+            typeLabelList.append(Label(self, text = result))
+            typeLabelList[i].grid(row = i+7, column = 6, sticky = E+N)
+            scoreLabelList.append(Label(self, text = matchableImg.matching_score_list[i]))
+            scoreLabelList[i].grid(row = i+7, column = 7, sticky = W+N)
+            i+=1
+
         self.update()
