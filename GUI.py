@@ -6,6 +6,8 @@ from PIL import Image, ImageTk
 
 from task_Expression import checkExpression
 from task_Color import checkColor
+from task_Background import checkBackground
+from task_Geometry import checkGeometry
 
 import os
 import cv2
@@ -68,7 +70,8 @@ class myUI(Frame, metaclass=Singleton):
             #self.score_label.set("Result:")
             checkExpression(self.file_list)
             checkColor(self.file_list)
-
+            checkBackground(self.file_list)
+            checkGeometry(self.file_list)
 
             self.display_result(self.file_list[self.currentDisplayedResult-1])
         #ToDo
@@ -90,8 +93,8 @@ class myUI(Frame, metaclass=Singleton):
         self.imageWindow.grid(row = 7, column = 1, rowspan = 5, columnspan = 5, sticky=W+N)
 
         #display matching results for currently displayed image
-        self.scoreLabel = Label(self, textvariable = self.score_label)
-        self.scoreLabel.grid(row = 7, column = 6, sticky = E+N)
+        #self.scoreLabel = Label(self, textvariable = self.score_label)
+        #self.scoreLabel.grid(row = 7, column = 6, sticky = E+N)
 
         #draw label that shows the image we are currently seeing
         self.pageLabel = Label(self, textvariable = self.filenumber_label)
@@ -109,14 +112,15 @@ class myUI(Frame, metaclass=Singleton):
             self.forth.grid(row=5, column=3, sticky=E)
 
         #draw matching results
+        
         typeLabelList = []
         scoreLabelList = []
         i = 0
         for result in matchableImg.matching_type_list:
             typeLabelList.append(Label(self, text = result))
-            typeLabelList[i].grid(row = i+7, column = 6, sticky = E+N)
+            typeLabelList[i].grid(row = i+7, column = 6, sticky = W)
             scoreLabelList.append(Label(self, text = matchableImg.matching_score_list[i]))
-            scoreLabelList[i].grid(row = i+7, column = 7, sticky = W+N)
+            scoreLabelList[i].grid(row = i+7, column = 8, sticky = W)
             i+=1
 
         self.update()
