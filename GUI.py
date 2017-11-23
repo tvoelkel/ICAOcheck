@@ -29,6 +29,17 @@ class myUI(Frame, metaclass=Singleton):
         self.filepath = ""
         self.file_list = []
         self.currentDisplayedResult = 1
+        self.typeLabelList = []
+        self.scoreLabelList = []
+
+        self.expression_type_label = StringVar()
+        self.color_type_label = StringVar()
+        self.background_type_label = StringVar()
+        self.geometry_type_label = StringVar()
+        self.expression_score_label = StringVar()
+        self.color_score_label = StringVar()
+        self.background_score_label = StringVar()
+        self.geometry_score_label = StringVar()
 
         #define Window properties
         self.master.title("ICAOcheck")
@@ -111,16 +122,51 @@ class myUI(Frame, metaclass=Singleton):
             self.forth = Button(self, text=">", command = lambda: self.switchDisplayedImage(1))
             self.forth.grid(row=5, column=3, sticky=E)
 
+        
         #draw matching results
         
-        typeLabelList = []
-        scoreLabelList = []
-        i = 0
-        for result in matchableImg.matching_type_list:
-            typeLabelList.append(Label(self, text = result))
-            typeLabelList[i].grid(row = i+7, column = 6, sticky = W)
-            scoreLabelList.append(Label(self, text = matchableImg.matching_score_list[i]))
-            scoreLabelList[i].grid(row = i+7, column = 8, sticky = W)
-            i+=1
+        #self.typeLabelList.clear
+        #self.scoreLabelList.clear
+        #i = 0
+        #for result in matchableImg.matching_type_list:
+        #    self.typeLabelList.append(Label(self, text = result))
+        #    self.typeLabelList[i].grid(row = i+7, column = 6, sticky = W)
+        #    self.scoreLabelList.append(Label(self, text = matchableImg.matching_score_list[i]))
+        #    self.scoreLabelList[i].grid(row = i+7, column = 8, sticky = W)
+        #    i+=1
 
+        if (len(self.file_list) > 0):
+            #type
+            self.expressiontypeLabel= Label(self, textvariable = self.expression_type_label)
+            self.expressiontypeLabel.grid(row = 7, column = 6, sticky = W)
+            self.expression_type_label.set(str(matchableImg.matching_type_list[0]))
+        
+            self.colortypeLabel= Label(self, textvariable = self.color_type_label)
+            self.colortypeLabel.grid(row = 8, column = 6, sticky = W)
+            self.color_type_label.set(str(matchableImg.matching_type_list[1]))
+
+            self.backgroundtypeLabel= Label(self, textvariable = self.background_type_label)
+            self.backgroundtypeLabel.grid(row = 9, column = 6, sticky = W)
+            self.background_type_label.set(str(matchableImg.matching_type_list[2]))
+        
+            self.geometrytypeLabel= Label(self, textvariable = self.geometry_type_label)
+            self.geometrytypeLabel.grid(row = 10, column = 6, sticky = W)
+            self.geometry_type_label.set(str(matchableImg.matching_type_list[3]))
+
+            #score
+            self.expressionscoreLabel= Label(self, textvariable = self.expression_score_label)
+            self.expressionscoreLabel.grid(row = 7, column = 7, sticky = W)
+            self.expression_score_label.set(str(matchableImg.matching_score_list[0]))
+        
+            self.colorscoreLabel= Label(self, textvariable = self.color_score_label)
+            self.colorscoreLabel.grid(row = 8, column = 7, sticky = W)
+            self.color_score_label.set(str(matchableImg.matching_score_list[1]))
+
+            self.backgroundscoreLabel= Label(self, textvariable = self.background_score_label)
+            self.backgroundscoreLabel.grid(row = 9, column = 7, sticky = W)
+            self.background_score_label.set(str(matchableImg.matching_score_list[2]))
+        
+            self.geometryscoreLabel= Label(self, textvariable = self.geometry_score_label)
+            self.geometryscoreLabel.grid(row = 10, column = 7, sticky = W)
+            self.geometry_score_label.set(str(matchableImg.matching_score_list[3]))
         self.update()
