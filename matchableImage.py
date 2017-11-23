@@ -10,3 +10,5 @@ class MatchableImage:
         #initialize a list to contain all matching scores
         self.matching_type_list = []
         self.matching_score_list = []
+
+        self.matching_results= {"Expression": "" , "Color": "" , "Background": "" , "Geometry": ""}

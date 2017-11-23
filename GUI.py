@@ -25,6 +25,7 @@ class myUI(Frame, metaclass=Singleton):
         #variables
         self.filepath_label = StringVar()
         self.score_label = StringVar()
+        self.type_label = StringVar()
         self.filenumber_label = StringVar()
         self.filepath = ""
         self.file_list = []
@@ -134,7 +135,7 @@ class myUI(Frame, metaclass=Singleton):
         #    self.scoreLabelList.append(Label(self, text = matchableImg.matching_score_list[i]))
         #    self.scoreLabelList[i].grid(row = i+7, column = 8, sticky = W)
         #    i+=1
-
+        """
         if (len(self.file_list) > 0):
             #type
             self.expressiontypeLabel= Label(self, textvariable = self.expression_type_label)
@@ -169,4 +170,40 @@ class myUI(Frame, metaclass=Singleton):
             self.geometryscoreLabel= Label(self, textvariable = self.geometry_score_label)
             self.geometryscoreLabel.grid(row = 10, column = 7, sticky = W)
             self.geometry_score_label.set(str(matchableImg.matching_score_list[3]))
+            """      
+        if (len(self.file_list) > 0):
+            #type
+            self.expressiontypeLabel= Label(self, textvariable = self.expression_type_label)
+            self.expressiontypeLabel.grid(row = 7, column = 6, sticky = W)
+            self.expression_type_label.set(str("Expression:"))
+        
+            self.colortypeLabel= Label(self, textvariable = self.color_type_label)
+            self.colortypeLabel.grid(row = 8, column = 6, sticky = W)
+            self.color_type_label.set(str("Color:"))
+
+            self.backgroundtypeLabel= Label(self, textvariable = self.background_type_label)
+            self.backgroundtypeLabel.grid(row = 9, column = 6, sticky = W)
+            self.background_type_label.set(str("Background:"))
+        
+            self.geometrytypeLabel= Label(self, textvariable = self.geometry_type_label)
+            self.geometrytypeLabel.grid(row = 10, column = 6, sticky = W)
+            self.geometry_type_label.set(str("Geometry:"))
+
+            #score
+            self.expressionscoreLabel= Label(self, textvariable = self.expression_score_label)
+            self.expressionscoreLabel.grid(row = 7, column = 7, sticky = W)
+            self.expression_score_label.set(str(matchableImg.matching_results["Expression"]))
+        
+            self.colorscoreLabel= Label(self, textvariable = self.color_score_label)
+            self.colorscoreLabel.grid(row = 8, column = 7, sticky = W)
+            self.color_score_label.set(str(matchableImg.matching_results["Color"]))
+
+            self.backgroundscoreLabel= Label(self, textvariable = self.background_score_label)
+            self.backgroundscoreLabel.grid(row = 9, column = 7, sticky = W)
+            self.background_score_label.set(str(matchableImg.matching_results["Background"]))
+        
+            self.geometryscoreLabel= Label(self, textvariable = self.geometry_score_label)
+            self.geometryscoreLabel.grid(row = 10, column = 7, sticky = W)
+            self.geometry_score_label.set(str(matchableImg.matching_results["Geometry"]))    
+        
         self.update()
