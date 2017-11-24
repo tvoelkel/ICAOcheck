@@ -40,6 +40,7 @@ class myUI(Frame, metaclass=Singleton):
         self.background_type_label = StringVar()
         self.geometry_type_label = StringVar()
         self.expression_score_label = StringVar()
+        self.glasses_score_label = StringVar()
         self.color_score_label = StringVar()
         self.background_score_label = StringVar()
         self.geometry_score_label = StringVar()

@@ -1,3 +1,5 @@
+#import dlib
+
 def checkExpression(imagelist):
     for image in imagelist:
         #image.matching_type_list.append("Expression Check: ")
