@@ -7,6 +7,7 @@ from PIL import Image, ImageTk
 from task_Expression import checkExpression
 from task_Color import checkColor
 from task_Background import checkBackground
+from task_Dynamicrange import checkDynamicRange
 from task_Geometry import checkGeometry
 
 import os
@@ -36,10 +37,12 @@ class myUI(Frame, metaclass=Singleton):
         self.expression_type_label = StringVar()
         self.color_type_label = StringVar()
         self.background_type_label = StringVar()
+        self.dynamicrange_type_label = StringVar()
         self.geometry_type_label = StringVar()
         self.expression_score_label = StringVar()
         self.color_score_label = StringVar()
         self.background_score_label = StringVar()
+        self.dynamicrange_score_label = StringVar()
         self.geometry_score_label = StringVar()
 
         #define Window properties
@@ -83,6 +86,7 @@ class myUI(Frame, metaclass=Singleton):
             checkExpression(self.file_list)
             checkColor(self.file_list)
             checkBackground(self.file_list)
+            checkDynamicRange(self.file_list)
             checkGeometry(self.file_list)
 
             self.display_result(self.file_list[self.currentDisplayedResult-1])
@@ -184,9 +188,13 @@ class myUI(Frame, metaclass=Singleton):
             self.backgroundtypeLabel= Label(self, textvariable = self.background_type_label)
             self.backgroundtypeLabel.grid(row = 9, column = 6, sticky = W)
             self.background_type_label.set(str("Background:"))
+
+            self.dynamicrangetypLabel= Label(self, textvariable = self.dynamicrange_type_label)
+            self.dynamicrangetypLabel.grid(row = 10, column = 6, sticky = W)
+            self.dynamicrange_type_label.set(str("Dynamic Range:"))
         
             self.geometrytypeLabel= Label(self, textvariable = self.geometry_type_label)
-            self.geometrytypeLabel.grid(row = 10, column = 6, sticky = W)
+            self.geometrytypeLabel.grid(row = 11, column = 6, sticky = W)
             self.geometry_type_label.set(str("Geometry:"))
 
             #score
@@ -201,9 +209,13 @@ class myUI(Frame, metaclass=Singleton):
             self.backgroundscoreLabel= Label(self, textvariable = self.background_score_label)
             self.backgroundscoreLabel.grid(row = 9, column = 7, sticky = W)
             self.background_score_label.set(str(matchableImg.matching_results["Background"]))
+
+            self.dynamicrangeLabel= Label(self, textvariable = self.dynamicrange_score_label)
+            self.dynamicrangeLabel.grid(row = 10, column = 7, sticky = W)
+            self.dynamicrange_score_label.set(str(matchableImg.matching_results["Dynamic Range"]))
         
             self.geometryscoreLabel= Label(self, textvariable = self.geometry_score_label)
-            self.geometryscoreLabel.grid(row = 10, column = 7, sticky = W)
+            self.geometryscoreLabel.grid(row = 11, column = 7, sticky = W)
             self.geometry_score_label.set(str(matchableImg.matching_results["Geometry"]))    
         
         self.update()
