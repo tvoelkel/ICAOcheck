@@ -8,6 +8,7 @@ from task_Expression import checkExpression
 from task_Glasses import checkGlasses
 from task_Color import checkColor
 from task_Background import checkBackground
+from task_Dynamicrange import checkDynamicRange
 from task_Geometry import checkGeometry
 
 import os
@@ -38,11 +39,13 @@ class myUI(Frame, metaclass=Singleton):
         self.glasses_type_label = StringVar()
         self.color_type_label = StringVar()
         self.background_type_label = StringVar()
+        self.dynamicrange_type_label = StringVar()
         self.geometry_type_label = StringVar()
         self.expression_score_label = StringVar()
         self.glasses_score_label = StringVar()
         self.color_score_label = StringVar()
         self.background_score_label = StringVar()
+        self.dynamicrange_score_label = StringVar()
         self.geometry_score_label = StringVar()
 
         #define Window properties
@@ -83,11 +86,12 @@ class myUI(Frame, metaclass=Singleton):
     def check_images(self):
         if(self.file_list != []):
             #self.score_label.set("Result:")
-            checkExpression(self.file_list)
-            checkGlasses(self.file_list)
-            checkColor(self.file_list)
-            checkBackground(self.file_list)
-            checkGeometry(self.file_list)
+        #    checkExpression(self.file_list)
+        #    checkGlasses(self.file_list)
+        #    checkColor(self.file_list)
+        #    checkBackground(self.file_list)
+            checkDynamicRange(self.file_list)
+        #    checkGeometry(self.file_list)
 
             self.display_result(self.file_list[self.currentDisplayedResult-1])
         #ToDo
@@ -177,6 +181,8 @@ class myUI(Frame, metaclass=Singleton):
             """
         if (len(self.file_list) > 0):
             #type
+            
+            #Patrick
             self.expressiontypeLabel= Label(self, textvariable = self.expression_type_label)
             self.expressiontypeLabel.grid(row = 7, column = 6, sticky = W)
             self.expression_type_label.set(str("Expression:"))
@@ -185,19 +191,27 @@ class myUI(Frame, metaclass=Singleton):
             self.glassestypeLabel.grid(row = 8, column = 6, sticky = W)
             self.glasses_type_label.set(str("Glasses:"))
 
+            #Tobias
             self.colortypeLabel= Label(self, textvariable = self.color_type_label)
             self.colortypeLabel.grid(row = 9, column = 6, sticky = W)
             self.color_type_label.set(str("Color:"))
 
+            #Tim
             self.backgroundtypeLabel= Label(self, textvariable = self.background_type_label)
             self.backgroundtypeLabel.grid(row = 10, column = 6, sticky = W)
             self.background_type_label.set(str("Background:"))
 
+            self.dynamicrangetypLabel= Label(self, textvariable = self.dynamicrange_type_label)
+            self.dynamicrangetypLabel.grid(row = 11, column = 6, sticky = W)
+            self.dynamicrange_type_label.set(str("Dynamic Range:"))
+
+            #Tom
             self.geometrytypeLabel= Label(self, textvariable = self.geometry_type_label)
-            self.geometrytypeLabel.grid(row = 11, column = 6, sticky = W)
+            self.geometrytypeLabel.grid(row = 12, column = 6, sticky = W)
             self.geometry_type_label.set(str("Geometry:"))
 
             #score
+            #Patrick
             self.expressionscoreLabel= Label(self, textvariable = self.expression_score_label)
             self.expressionscoreLabel.grid(row = 7, column = 7, sticky = W)
             self.expression_score_label.set(str(matchableImg.matching_results["Expression"]))
@@ -206,16 +220,23 @@ class myUI(Frame, metaclass=Singleton):
             self.glassesscoreLabel.grid(row = 8, column = 7, sticky = W)
             self.glasses_score_label.set(str(matchableImg.matching_results["Glasses"]))
 
+            #Tobias
             self.colorscoreLabel= Label(self, textvariable = self.color_score_label)
             self.colorscoreLabel.grid(row = 9, column = 7, sticky = W)
             self.color_score_label.set(str(matchableImg.matching_results["Color"]))
 
+            #Tim
             self.backgroundscoreLabel= Label(self, textvariable = self.background_score_label)
             self.backgroundscoreLabel.grid(row = 10, column = 7, sticky = W)
             self.background_score_label.set(str(matchableImg.matching_results["Background"]))
 
+            self.dynamicrangeLabel= Label(self, textvariable = self.dynamicrange_score_label)
+            self.dynamicrangeLabel.grid(row = 11, column = 7, sticky = W)
+            self.dynamicrange_score_label.set(str(matchableImg.matching_results["Dynamic Range"]))
+
+            #Tom
             self.geometryscoreLabel= Label(self, textvariable = self.geometry_score_label)
-            self.geometryscoreLabel.grid(row = 11, column = 7, sticky = W)
+            self.geometryscoreLabel.grid(row = 12, column = 7, sticky = W)
             self.geometry_score_label.set(str(matchableImg.matching_results["Geometry"]))
 
         self.update()
