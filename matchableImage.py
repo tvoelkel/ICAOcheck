@@ -11,5 +11,9 @@ class MatchableImage:
         #self.matching_type_list = []
         #self.matching_score_list = []
 
+<<<<<<< HEAD
         self.matching_results= {"Expression": "" ,
          "Color": "" , "Background": "" , "Geometry": "", "Dynamic Range": ""}
+=======
+        self.matching_results= {"Expression": "", "Glasses": "", "Color": "" , "Background": "" , "Geometry": "", "Dynamic Range": ""}
+>>>>>>> 3b09df50b2f3abe480b54221686cafa0c24c8194
