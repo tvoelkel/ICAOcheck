@@ -28,7 +28,8 @@ def checkGlasses(imagelist):
 
 def checkExistenceOfGlasses(image):
     #ToDo check whether the person wear glasses or not
-
+    return False
 
 def checkEyeVisibility(image):
     #ToDo check the visibility of the eyes when the person wear glasses
+    return False
