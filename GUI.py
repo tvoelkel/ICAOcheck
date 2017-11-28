@@ -6,9 +6,13 @@ from PIL import Image, ImageTk
 
 from task_Expression import checkExpression
 from task_Glasses import checkGlasses
+
 from task_Color import checkColor
+
 from task_Background import checkBackground
 from task_Dynamicrange import checkDynamicRange
+from task_Contrast import checkContrast
+
 from task_Geometry import checkGeometry
 
 import os
@@ -40,12 +44,14 @@ class myUI(Frame, metaclass=Singleton):
         self.color_type_label = StringVar()
         self.background_type_label = StringVar()
         self.dynamicrange_type_label = StringVar()
+        self.contrast_type_label = StringVar()
         self.geometry_type_label = StringVar()
         self.expression_score_label = StringVar()
         self.glasses_score_label = StringVar()
         self.color_score_label = StringVar()
         self.background_score_label = StringVar()
         self.dynamicrange_score_label = StringVar()
+        self.contrast_score_label = StringVar()
         self.geometry_score_label = StringVar()
 
         #define Window properties
@@ -205,9 +211,13 @@ class myUI(Frame, metaclass=Singleton):
             self.dynamicrangetypLabel.grid(row = 11, column = 6, sticky = W)
             self.dynamicrange_type_label.set(str("Dynamic Range:"))
 
+            self.contrasttypLabel= Label(self, textvariable = self.contrast_type_label)
+            self.contrasttypLabel.grid(row = 12, column = 6, sticky = W)
+            self.contrast_type_label.set(str("Contrast:"))
+
             #Tom
             self.geometrytypeLabel= Label(self, textvariable = self.geometry_type_label)
-            self.geometrytypeLabel.grid(row = 12, column = 6, sticky = W)
+            self.geometrytypeLabel.grid(row = 13, column = 6, sticky = W)
             self.geometry_type_label.set(str("Geometry:"))
 
             #score
@@ -234,9 +244,13 @@ class myUI(Frame, metaclass=Singleton):
             self.dynamicrangeLabel.grid(row = 11, column = 7, sticky = W)
             self.dynamicrange_score_label.set(str(matchableImg.matching_results["Dynamic Range"]))
 
+            self.contrastLabel= Label(self, textvariable = self.contrast_score_label)
+            self.contrastLabel.grid(row = 12, column = 7, sticky = W)
+            self.contrast_score_label.set(str(matchableImg.matching_results["Contrast"]))
+
             #Tom
             self.geometryscoreLabel= Label(self, textvariable = self.geometry_score_label)
-            self.geometryscoreLabel.grid(row = 12, column = 7, sticky = W)
+            self.geometryscoreLabel.grid(row = 13, column = 7, sticky = W)
             self.geometry_score_label.set(str(matchableImg.matching_results["Geometry"]))
 
         self.update()
