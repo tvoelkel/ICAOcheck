@@ -17,8 +17,10 @@ def checkExpression(imagelist):
 
         detector = dlib.get_frontal_face_detector()
         predicator = dlib.shape_predictor()
-        win = dlib.image_window()
-        print("Processing file: {}".format(image.image_path + image.image_name))
+        #win = dlib.image_window()
+        #print("Processing file: {}".format(image.image_path + image.image_name))
+
+        #ToDo get the facial landmarks
 
         # The 1 in the second argument indicates that we should upsample the image
         # 1 time.  This will make everything bigger and allow us to detect more
@@ -28,15 +30,15 @@ def checkExpression(imagelist):
         for i, d in enumerate(dets):
             print("Detection {}: Left: {} Top: {} Right: {} Bottom: {}".format(
                 i, d.left(), d.top(), d.right(), d.bottom()))
-        win.clear_overlay()
-        win.set_image(image_data)
-        win.add_overlay(dets)
-        #only for testing
-        #point_a = [2,3]
-        #point_b = [2,2]
-        #distance(point_a,point_b)
+        #win.clear_overlay()
+        #win.set_image(image_data)
+        #win.add_overlay(dets)
+        """only for testing
+        point_a = [2,3]
+        point_b = [2,2]
+        distance(point_a,point_b)
+        """
 
-        #detector = dlib.get_frontal_face_detector()
         #only for testing
         close_mouth = True
         no_smile = True
@@ -45,7 +47,7 @@ def checkExpression(imagelist):
         #preparation for close close mouth
 
         #calculate the between_lips distance and the thick of the lower lip
-        #etween_lips = distance()
+        #between_lips = distance()
         #lower_lip = distance()
 
         #check whether the mouth is closed

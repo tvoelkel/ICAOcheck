@@ -6,9 +6,13 @@ from PIL import Image, ImageTk
 
 from task_Expression import checkExpression
 from task_Glasses import checkGlasses
+
 from task_Color import checkColor
+
 from task_Background import checkBackground
 from task_Dynamicrange import checkDynamicRange
+from task_Contrast import checkContrast
+
 from task_Geometry import checkGeometry
 from task_Lighting import checkLighting
 from task_Contrast import checkContrast
@@ -44,6 +48,7 @@ class myUI(Frame, metaclass=Singleton):
         self.contrast_type_label = StringVar()
         self.background_type_label = StringVar()
         self.dynamicrange_type_label = StringVar()
+        self.contrast_type_label = StringVar()
         self.geometry_type_label = StringVar()
         self.expression_score_label = StringVar()
         self.glasses_score_label = StringVar()
@@ -52,6 +57,7 @@ class myUI(Frame, metaclass=Singleton):
         self.background_score_label = StringVar()
         self.contrast_score_label = StringVar()
         self.dynamicrange_score_label = StringVar()
+        self.contrast_score_label = StringVar()
         self.geometry_score_label = StringVar()
 
         #define Window properties
