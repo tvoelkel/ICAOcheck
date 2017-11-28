@@ -20,6 +20,8 @@ def checkExpression(imagelist):
         #win = dlib.image_window()
         #print("Processing file: {}".format(image.image_path + image.image_name))
 
+        #ToDo get the facial landmarks
+
         # The 1 in the second argument indicates that we should upsample the image
         # 1 time.  This will make everything bigger and allow us to detect more
         # faces.
