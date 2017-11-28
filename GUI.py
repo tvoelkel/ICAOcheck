@@ -122,7 +122,7 @@ class myUI(Frame, metaclass=Singleton):
         self.imageWindow = Canvas(self, width = 280, height = 360)
         self.imageWindow.create_image(0,0, anchor = NW, image = photo)
         self.imageWindow.image = photo
-        self.imageWindow.grid(row = 7, column = 1, rowspan = 7, columnspan = 5, sticky=W+N)
+        self.imageWindow.grid(row = 7, column = 1, rowspan = 9, columnspan = 5, sticky=W+N)
 
         #display matching results for currently displayed image
         #self.scoreLabel = Label(self, textvariable = self.score_label)
