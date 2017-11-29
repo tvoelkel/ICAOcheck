@@ -3,8 +3,8 @@
 ## Lighting:
 Lighting check works by examining the mean intensity values of each color channel at 4 specific locations in the image. An edge detection filter is applied as well, to make sure that each measurement zone is homogeneous enough for an accurate mean intensity measurement.
 
-<p align="center">
-  <img src="https://i.imgur.com/eVDUu2n.jpg" width="350"/>
+<p align="left">
+  <img src="https://i.imgur.com/eVDUu2n.jpg" width="200"/>
 </p>
 
 ### Explanation of output messages
