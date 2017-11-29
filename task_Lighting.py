@@ -95,25 +95,25 @@ def intensityCheck(image, rectangles):
         crop = image[y:y + h, x:x + w]
         cropGray = cv2.cvtColor(crop, cv2.COLOR_BGR2GRAY)
         #apply Canny Edge detector
-        edges = cv2.Canny(cropGray, 50, 100)
+        edges = cv2.Canny(cropGray, 50, 200)
 
         #print(np.count_nonzero(edges))
         #cv2.imshow(str(i), cropGray)
 
-        if np.count_nonzero(edges) < 10:
+        if np.count_nonzero(edges) < 50:
             blueVals.append(np.mean(crop[:,:,0]))
             greenVals.append(np.mean(crop[:,:,1]))
             redVals.append(np.mean(crop[:,:,2]))
 
             #debugging
-            #cv2.rectangle(debugDisplayImage, (x, y), (x + w, y + h), (0, 255, 0), 2)
+            cv2.rectangle(debugDisplayImage, (x, y), (x + w, y + h), (0, 255, 0), 2)
         else:
             i = 0
             #debugging
-            #cv2.rectangle(debugDisplayImage, (x, y), (x + w, y + h), (0, 0, 255), 2)
+            cv2.rectangle(debugDisplayImage, (x, y), (x + w, y + h), (0, 0, 255), 2)
 
     #debugging
-    #cv2.imshow("Output", debugDisplayImage)
+    cv2.imshow(str(image), debugDisplayImage)
     return (blueVals, greenVals, redVals)
 
 def shapeToArray(shape):
