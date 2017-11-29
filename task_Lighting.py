@@ -59,7 +59,7 @@ def computeImage(image, shape):
     IED = np.linalg.norm(H)
 
     if IED < 90:
-        return "Failed: Inner eye distance smaller than 90px"
+        return "Failed: Inner eye distance smaller than 90px."
 
     V = np.array([mouthCenter[0] - M[0], mouthCenter[1] - M[1]])
     EM = np.linalg.norm(V)
@@ -77,9 +77,9 @@ def computeImage(image, shape):
     (blueValues, greenValues, redValues) = intensityCheck(image, (rightCheekMeasureRect, leftCheekMeasureRect, chinMeasureRect, foreheadMeasureRect))
 
     if len(blueValues) < 3:
-        return "Error:  Not enough homogenous facial zones."
+        return "Failed:  Not enough homogenous facial zones."
     elif min(blueValues) < 0.5 * max(blueValues) or min(greenValues) < 0.5 * max(greenValues) or min(redValues) < 0.5 * max(redValues):
-        return "Failed: Light intensity difference to high"
+        return "Failed: Light intensity difference to high."
     else:
         return "Passed."
 
@@ -113,7 +113,7 @@ def intensityCheck(image, rectangles):
             cv2.rectangle(debugDisplayImage, (x, y), (x + w, y + h), (0, 0, 255), 2)
 
     #debugging
-    cv2.imshow(str(image), debugDisplayImage)
+    #cv2.imshow(str(image), debugDisplayImage)
     return (blueVals, greenVals, redVals)
 
 def shapeToArray(shape):
