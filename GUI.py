@@ -6,10 +6,16 @@ from PIL import Image, ImageTk
 
 from task_Expression import checkExpression
 from task_Glasses import checkGlasses
+
 from task_Color import checkColor
+
 from task_Background import checkBackground
 from task_Dynamicrange import checkDynamicRange
+from task_Contrast import checkContrast
+
 from task_Geometry import checkGeometry
+from task_Lighting import checkLighting
+from task_Contrast import checkContrast
 
 import os
 import cv2
@@ -38,14 +44,20 @@ class myUI(Frame, metaclass=Singleton):
         self.expression_type_label = StringVar()
         self.glasses_type_label = StringVar()
         self.color_type_label = StringVar()
+        self.lighting_type_label = StringVar()
+        self.contrast_type_label = StringVar()
         self.background_type_label = StringVar()
         self.dynamicrange_type_label = StringVar()
+        self.contrast_type_label = StringVar()
         self.geometry_type_label = StringVar()
         self.expression_score_label = StringVar()
         self.glasses_score_label = StringVar()
         self.color_score_label = StringVar()
+        self.lighting_score_label = StringVar()
         self.background_score_label = StringVar()
+        self.contrast_score_label = StringVar()
         self.dynamicrange_score_label = StringVar()
+        self.contrast_score_label = StringVar()
         self.geometry_score_label = StringVar()
 
         #define Window properties
@@ -85,21 +97,17 @@ class myUI(Frame, metaclass=Singleton):
 
     def check_images(self):
         if(self.file_list != []):
+
             #self.score_label.set("Result:")
-<<<<<<< HEAD
-            checkExpression(self.file_list)
-            checkColor(self.file_list)
-            checkBackground(self.file_list)
-            checkDynamicRange(self.file_list)
-            checkGeometry(self.file_list)
-=======
+
+
         #    checkExpression(self.file_list)
         #    checkGlasses(self.file_list)
         #    checkColor(self.file_list)
+        #    checkLighting(self.file_list)
         #    checkBackground(self.file_list)
-            checkDynamicRange(self.file_list)
+        #    checkDynamicRange(self.file_list)
         #    checkGeometry(self.file_list)
->>>>>>> 3b09df50b2f3abe480b54221686cafa0c24c8194
 
             self.display_result(self.file_list[self.currentDisplayedResult-1])
         #ToDo
@@ -118,7 +126,7 @@ class myUI(Frame, metaclass=Singleton):
         self.imageWindow = Canvas(self, width = 280, height = 360)
         self.imageWindow.create_image(0,0, anchor = NW, image = photo)
         self.imageWindow.image = photo
-        self.imageWindow.grid(row = 7, column = 1, rowspan = 5, columnspan = 5, sticky=W+N)
+        self.imageWindow.grid(row = 7, column = 1, rowspan = 9, columnspan = 5, sticky=W+N)
 
         #display matching results for currently displayed image
         #self.scoreLabel = Label(self, textvariable = self.score_label)
@@ -139,57 +147,9 @@ class myUI(Frame, metaclass=Singleton):
             self.forth = Button(self, text=">", command = lambda: self.switchDisplayedImage(1))
             self.forth.grid(row=5, column=3, sticky=E)
 
-
-        #draw matching results
-
-        #self.typeLabelList.clear
-        #self.scoreLabelList.clear
-        #i = 0
-        #for result in matchableImg.matching_type_list:
-        #    self.typeLabelList.append(Label(self, text = result))
-        #    self.typeLabelList[i].grid(row = i+7, column = 6, sticky = W)
-        #    self.scoreLabelList.append(Label(self, text = matchableImg.matching_score_list[i]))
-        #    self.scoreLabelList[i].grid(row = i+7, column = 8, sticky = W)
-        #    i+=1
-        """
         if (len(self.file_list) > 0):
             #type
-            self.expressiontypeLabel= Label(self, textvariable = self.expression_type_label)
-            self.expressiontypeLabel.grid(row = 7, column = 6, sticky = W)
-            self.expression_type_label.set(str(matchableImg.matching_type_list[0]))
 
-            self.colortypeLabel= Label(self, textvariable = self.color_type_label)
-            self.colortypeLabel.grid(row = 8, column = 6, sticky = W)
-            self.color_type_label.set(str(matchableImg.matching_type_list[1]))
-
-            self.backgroundtypeLabel= Label(self, textvariable = self.background_type_label)
-            self.backgroundtypeLabel.grid(row = 9, column = 6, sticky = W)
-            self.background_type_label.set(str(matchableImg.matching_type_list[2]))
-
-            self.geometrytypeLabel= Label(self, textvariable = self.geometry_type_label)
-            self.geometrytypeLabel.grid(row = 10, column = 6, sticky = W)
-            self.geometry_type_label.set(str(matchableImg.matching_type_list[3]))
-
-            #score
-            self.expressionscoreLabel= Label(self, textvariable = self.expression_score_label)
-            self.expressionscoreLabel.grid(row = 7, column = 7, sticky = W)
-            self.expression_score_label.set(str(matchableImg.matching_score_list[0]))
-
-            self.colorscoreLabel= Label(self, textvariable = self.color_score_label)
-            self.colorscoreLabel.grid(row = 8, column = 7, sticky = W)
-            self.color_score_label.set(str(matchableImg.matching_score_list[1]))
-
-            self.backgroundscoreLabel= Label(self, textvariable = self.background_score_label)
-            self.backgroundscoreLabel.grid(row = 9, column = 7, sticky = W)
-            self.background_score_label.set(str(matchableImg.matching_score_list[2]))
-
-            self.geometryscoreLabel= Label(self, textvariable = self.geometry_score_label)
-            self.geometryscoreLabel.grid(row = 10, column = 7, sticky = W)
-            self.geometry_score_label.set(str(matchableImg.matching_score_list[3]))
-            """
-        if (len(self.file_list) > 0):
-            #type
-            
             #Patrick
             self.expressiontypeLabel= Label(self, textvariable = self.expression_type_label)
             self.expressiontypeLabel.grid(row = 7, column = 6, sticky = W)
@@ -204,26 +164,26 @@ class myUI(Frame, metaclass=Singleton):
             self.colortypeLabel.grid(row = 9, column = 6, sticky = W)
             self.color_type_label.set(str("Color:"))
 
+            self.lightingtypeLabel= Label(self, textvariable = self.lighting_type_label)
+            self.lightingtypeLabel.grid(row = 10, column = 6, sticky = W)
+            self.lighting_type_label.set(str("Lighting:"))
+
             #Tim
             self.backgroundtypeLabel= Label(self, textvariable = self.background_type_label)
-            self.backgroundtypeLabel.grid(row = 10, column = 6, sticky = W)
+            self.backgroundtypeLabel.grid(row = 11, column = 6, sticky = W)
             self.background_type_label.set(str("Background:"))
-
-            self.dynamicrangetypLabel= Label(self, textvariable = self.dynamicrange_type_label)
-<<<<<<< HEAD
-            self.dynamicrangetypLabel.grid(row = 10, column = 6, sticky = W)
-            self.dynamicrange_type_label.set(str("Dynamic Range:"))
         
-            self.geometrytypeLabel= Label(self, textvariable = self.geometry_type_label)
-            self.geometrytypeLabel.grid(row = 11, column = 6, sticky = W)
-=======
-            self.dynamicrangetypLabel.grid(row = 11, column = 6, sticky = W)
+            self.dynamicrangetypeLabel= Label(self, textvariable = self.dynamicrange_type_label)
+            self.dynamicrangetypLabel.grid(row = 12, column = 6, sticky = W)
             self.dynamicrange_type_label.set(str("Dynamic Range:"))
+
+            self.contrasttypLabel= Label(self, textvariable = self.contrast_type_label)
+            self.contrasttypLabel.grid(row = 13, column = 6, sticky = W)
+            self.contrast_type_label.set(str("Contrast:"))
 
             #Tom
             self.geometrytypeLabel= Label(self, textvariable = self.geometry_type_label)
-            self.geometrytypeLabel.grid(row = 12, column = 6, sticky = W)
->>>>>>> 3b09df50b2f3abe480b54221686cafa0c24c8194
+            self.geometrytypeLabel.grid(row = 14, column = 6, sticky = W)
             self.geometry_type_label.set(str("Geometry:"))
 
             #score
@@ -241,28 +201,26 @@ class myUI(Frame, metaclass=Singleton):
             self.colorscoreLabel.grid(row = 9, column = 7, sticky = W)
             self.color_score_label.set(str(matchableImg.matching_results["Color"]))
 
+            self.lightingscoreLabel= Label(self, textvariable = self.lighting_score_label)
+            self.lightingscoreLabel.grid(row = 10, column = 7, sticky = W)
+            self.lighting_score_label.set(str(matchableImg.matching_results["Lighting"]))
+
             #Tim
             self.backgroundscoreLabel= Label(self, textvariable = self.background_score_label)
-            self.backgroundscoreLabel.grid(row = 10, column = 7, sticky = W)
+            self.backgroundscoreLabel.grid(row = 11, column = 7, sticky = W)
             self.background_score_label.set(str(matchableImg.matching_results["Background"]))
 
-            self.dynamicrangeLabel= Label(self, textvariable = self.dynamicrange_score_label)
-<<<<<<< HEAD
-            self.dynamicrangeLabel.grid(row = 10, column = 7, sticky = W)
+            self.dynamicrangeLabel= Label(self, textvariable = self.dynamicrange_score_label) 
+            self.dynamicrangeLabel.grid(row = 12, column = 7, sticky = W)
             self.dynamicrange_score_label.set(str(matchableImg.matching_results["Dynamic Range"]))
-        
-            self.geometryscoreLabel= Label(self, textvariable = self.geometry_score_label)
-            self.geometryscoreLabel.grid(row = 11, column = 7, sticky = W)
-            self.geometry_score_label.set(str(matchableImg.matching_results["Geometry"]))    
-        
-=======
-            self.dynamicrangeLabel.grid(row = 11, column = 7, sticky = W)
-            self.dynamicrange_score_label.set(str(matchableImg.matching_results["Dynamic Range"]))
+
+            self.contrastLabel= Label(self, textvariable = self.contrast_score_label)
+            self.contrastLabel.grid(row = 13, column = 7, sticky = W)
+            self.contrast_score_label.set(str(matchableImg.matching_results["Contrast"]))
 
             #Tom
             self.geometryscoreLabel= Label(self, textvariable = self.geometry_score_label)
-            self.geometryscoreLabel.grid(row = 12, column = 7, sticky = W)
+            self.geometryscoreLabel.grid(row = 14, column = 7, sticky = W)
             self.geometry_score_label.set(str(matchableImg.matching_results["Geometry"]))
 
->>>>>>> 3b09df50b2f3abe480b54221686cafa0c24c8194
         self.update()
