@@ -77,7 +77,7 @@ def computeImage(image, shape):
     (blueValues, greenValues, redValues) = intensityCheck(image, (rightCheekMeasureRect, leftCheekMeasureRect, chinMeasureRect, foreheadMeasureRect))
 
     if len(blueValues) < 3:
-        return "Failed:  Not enough homogenous facial zones."
+        return "Failed:  Not enough homogeneous facial zones."
     elif min(blueValues) < 0.5 * max(blueValues) or min(greenValues) < 0.5 * max(greenValues) or min(redValues) < 0.5 * max(redValues):
         return "Failed: Light intensity difference to high."
     else:
