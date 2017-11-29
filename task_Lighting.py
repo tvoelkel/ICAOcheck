@@ -20,9 +20,9 @@ def _checkLighting(image):
     face_rectangle_array = detector(img, 0)
 
     if len(face_rectangle_array) > 1:
-        return "Error: More than one face detected."
+        return "Failed: More than one face detected."
     elif len(face_rectangle_array) == 0:
-        return "Error: No face detected."
+        return "Failed: No face detected."
     else:
         shape = shapeToArray(predictor(img, face_rectangle_array[0]))
         return computeImage(img, shape)
@@ -44,6 +44,11 @@ def computeImage(image, shape):
     #[48 - 67]: Mouth
 
     #variables
+    chinContainsContour = False
+    foreheadContainsContour = False
+    rightCheekContainsContour = False
+    leftCheekContainsContour = False
+
     #feature points as illustrated in ICAO lighting restrictions
     leftEyeCenter = (int((shape[43][0] + shape[44][0] + shape[46][0] + shape[47][0]) / 4), int((shape[43][1] + shape[44][1] + shape[46][1] + shape[47][1]) / 4))
     rightEyeCenter = (int((shape[37][0] + shape[38][0] + shape[40][0] + shape[41][0]) / 4), int((shape[37][1] + shape[38][1] + shape[40][1] + shape[41][1]) / 4))
@@ -54,7 +59,7 @@ def computeImage(image, shape):
     IED = np.linalg.norm(H)
 
     if IED < 90:
-        return "Failed: Inner eye distance smaller than 90px"
+        return "Failed: Inner eye distance smaller than 90px."
 
     V = np.array([mouthCenter[0] - M[0], mouthCenter[1] - M[1]])
     EM = np.linalg.norm(V)
@@ -68,19 +73,48 @@ def computeImage(image, shape):
     rightCheekMeasureRect = (int(cheekLevelSpot[0] - 0.5 * H[0] - MP), int(cheekLevelSpot[1] - 0.5 * H[1]), iMP, iMP)
     leftCheekMeasureRect = (int(cheekLevelSpot[0] + 0.5 * H[0]), int(cheekLevelSpot[1] + 0.5 * H[1]), iMP, iMP)
 
-    #get mean intensity values for each channel of each measurement zone
-    blueValues = [getIntensity(foreheadMeasureRect, 0, image), getIntensity(chinMeasureRect, 0, image), getIntensity(rightCheekMeasureRect, 0, image), getIntensity(leftCheekMeasureRect, 0, image)]
-    greenValues = [getIntensity(foreheadMeasureRect, 1, image), getIntensity(chinMeasureRect, 1, image), getIntensity(rightCheekMeasureRect, 1, image), getIntensity(leftCheekMeasureRect, 1, image)]
-    redValues = [getIntensity(foreheadMeasureRect, 2, image), getIntensity(chinMeasureRect, 2, image), getIntensity(rightCheekMeasureRect, 2, image), getIntensity(leftCheekMeasureRect, 2, image)]
+    #get Intensity values for specific channels of all regions
+    (blueValues, greenValues, redValues) = intensityCheck(image, (rightCheekMeasureRect, leftCheekMeasureRect, chinMeasureRect, foreheadMeasureRect))
 
-    if min(blueValues) < 0.5 * max(blueValues) or min(greenValues) < 0.5 * max(greenValues) or min(redValues) < 0.5 * max(redValues):
-        return "Failed: Light intensity difference to high"
+    if len(blueValues) < 3:
+        return "Failed:  Not enough homogeneous facial zones."
+    elif min(blueValues) < 0.5 * max(blueValues) or min(greenValues) < 0.5 * max(greenValues) or min(redValues) < 0.5 * max(redValues):
+        return "Failed: Light intensity difference to high."
     else:
         return "Passed."
 
-def getIntensity(rect, channel, image):
-    crop = image[rect[0]:rect[0]+rect[2], rect[1]:rect[1]+rect[3]]
-    return np.mean(crop[:,:,channel])
+def intensityCheck(image, rectangles):
+    cropList = []
+    redVals = []
+    blueVals = []
+    greenVals = []
+    debugDisplayImage = image
+
+    for i in range(0, 4):
+        (x, y, w, h) = rectangles[i]
+        crop = image[y:y + h, x:x + w]
+        cropGray = cv2.cvtColor(crop, cv2.COLOR_BGR2GRAY)
+        #apply Canny Edge detector
+        edges = cv2.Canny(cropGray, 50, 200)
+
+        #print(np.count_nonzero(edges))
+        #cv2.imshow(str(i), cropGray)
+
+        if np.count_nonzero(edges) < 50:
+            blueVals.append(np.mean(crop[:,:,0]))
+            greenVals.append(np.mean(crop[:,:,1]))
+            redVals.append(np.mean(crop[:,:,2]))
+
+            #debugging
+            cv2.rectangle(debugDisplayImage, (x, y), (x + w, y + h), (0, 255, 0), 2)
+        else:
+            i = 0
+            #debugging
+            cv2.rectangle(debugDisplayImage, (x, y), (x + w, y + h), (0, 0, 255), 2)
+
+    #debugging
+    #cv2.imshow(str(image), debugDisplayImage)
+    return (blueVals, greenVals, redVals)
 
 def shapeToArray(shape):
     #convert dlib shape object to array
