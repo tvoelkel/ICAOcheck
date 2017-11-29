@@ -82,7 +82,6 @@ def computeImage(image, shape):
     #[42 - 47]: Left eye
     #[48 - 67]: Mouth
 
-    #variables
     #feature points as illustrated in ICAO lighting restrictions
     leftEyeCenter = (int((shape[43][0] + shape[44][0] + shape[46][0] + shape[47][0]) / 4), int((shape[43][1] + shape[44][1] + shape[46][1] + shape[47][1]) / 4))
     rightEyeCenter = (int((shape[37][0] + shape[38][0] + shape[40][0] + shape[41][0]) / 4), int((shape[37][1] + shape[38][1] + shape[40][1] + shape[41][1]) / 4))
@@ -105,15 +104,22 @@ def computeImage(image, shape):
     horizontal_ratio=False
     vertical_ratio=False
     headwidth_ratio=False
-    headlength_ratio=False
+    headlength_ratio=True
 
     #testwerte
-    imagewidth_A= 75
+    '''imagewidth_A= 75
     imageheight_B= 100
     horizontaldistance_Mh= 35
     verticaldistance_Mv= 40
     headwidth_W= 40
-    headlength_L= 70
+    headlength_L= 70'''
+
+    imagewidth_A= int (len(image)-1)
+    imageheight_B= int (len(image_data[0])-1)
+    horizontaldistance_Mh= int((leftEyeCenter[0] + rightEyeCenter[0]) / 2)
+    verticaldistance_Mv= int((leftEyeCenter[1] + rightEyeCenter[1]) / 2)
+    headwidth_W= int(shape[16][1]-shape[0][1])
+    #headlength_L= 70
 
 
     if imagewidth_A/imageheight_B >= 0.74 and imagewidth_A/imageheight_B <= 0.8:
@@ -128,8 +134,8 @@ def computeImage(image, shape):
     if headwidth_W/imagewidth_A >= 0.5 and headwidth_W/imagewidth_A <= 0.75:
         headwidth_ratio=True
 
-    if headlength_L/imageheight_B >= 0.6 and headlength_L/imageheight_B <= 0.9:
-        headlength_ratio=True
+    #if headlength_L/imageheight_B >= 0.6 and headlength_L/imageheight_B <= 0.9:
+    #    headlength_ratio=True
         
     if image_ratio == True and horizontal_ratio == True and vertical_ratio == True and headwidth_ratio == True and headlength_ratio == True:
         return "ICAO komform"
