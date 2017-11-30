@@ -8,11 +8,8 @@ Lighting check works by examining the mean intensity values of each color channe
 </p>
 
 ### Explanation of output messages
-**"Failed: More than one face detected."**  
-Dlib frontal face detector detected more than one face in the input image.
-
-**"Failed: No face detected."**  
-Dlib frontal face detector detected no face in the input image.
+**"Failed: Number of detected faces != 1"**  
+Dlib frontal face detector detected zero or more than one face in the input image.
 
 **"Failed: Inner eye distance smaller than 90px."**  
 As stated in the ICAO standard for passport photographs, the distance between both eyes has to be at least 90 Pixels. Try a higher resolution image.

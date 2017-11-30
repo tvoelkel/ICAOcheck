@@ -2,6 +2,7 @@ from tkinter import *
 from tkinter.filedialog import askopenfilename
 from tkinter.messagebox import showerror
 from matchableImage import MatchableImage
+from helperFunctions import getFacialLandmarks
 from PIL import Image, ImageTk
 
 from task_Expression import checkExpression
@@ -97,9 +98,9 @@ class myUI(Frame, metaclass=Singleton):
 
     def check_images(self):
         if(self.file_list != []):
-
-            #self.score_label.set("Result:")
-
+            for image in self.file_list:
+                #run helper function to set the facial landmark array for each image and set a flag whether the number of faces != 1
+                (image.facial_landmarks, image.facial_landmarks_error) = getFacialLandmarks(image)
 
         #    checkExpression(self.file_list)
         #    checkGlasses(self.file_list)
@@ -107,6 +108,7 @@ class myUI(Frame, metaclass=Singleton):
         #    checkLighting(self.file_list)
         #    checkBackground(self.file_list)
         #    checkDynamicRange(self.file_list)
+        #    checkContrast(self.file_list)
         #    checkGeometry(self.file_list)
 
             self.display_result(self.file_list[self.currentDisplayedResult-1])
