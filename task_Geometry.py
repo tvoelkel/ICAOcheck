@@ -40,7 +40,7 @@ def _checkGeometry(image, shape):
 
     H = np.array([leftEyeCenter[0] - rightEyeCenter[0], leftEyeCenter[1] - rightEyeCenter[1]])
 
-    V = np.array([mouthCenter[0] - M[0], mouthCenter[1] - M[1]])   
+    V = np.array([mouthCenter[0] - M[0], mouthCenter[1] - M[1]])
 
 
     #variables
@@ -72,22 +72,23 @@ def _checkGeometry(image, shape):
     # |Mh-V(x,0)| <= sin(5°)*Mv
 
     #difference_exist= math.fabs((((mouthCenter[0]-M[0])/(mouthCenter[1]-M[1]))*(-M[1]))+M[0])
-    #difference_exist= math.fabs(((M[0]*-mouthCenter[1])+(-mouthCenter[0]*-M[1]))/(-M[1]+mouthCenter[1]))   
+    #difference_exist= math.fabs(((M[0]*-mouthCenter[1])+(-mouthCenter[0]*-M[1]))/(-M[1]+mouthCenter[1]))
     difference_allowed= math.fabs(verticaldistance_Mv*math.sin(math.radians(5)))
 
     dx=math.fabs(mouthCenter[0]-M[0])
     dy=math.fabs(mouthCenter[1]-M[1])
-    m=dy/dx
-    dy2=M[1]
-    dx=dy2/m
+    if dx != 0:
+        m=dy/dx
+        dy2=M[1]
+        dx=dy2/m
 
     if dx<=difference_allowed:
         head_roll=True
 
     if imagewidth_A/imageheight_B >= 0.74 and imagewidth_A/imageheight_B <= 0.8:
         image_ratio=True
-        
-    if horizontaldistance_Mh/imagewidth_A >=0.45 and horizontaldistance_Mh/imagewidth_A <=0.55:           
+
+    if horizontaldistance_Mh/imagewidth_A >=0.45 and horizontaldistance_Mh/imagewidth_A <=0.55:
         horizontal_ratio=True
 
     if verticaldistance_Mv/imageheight_B >=0.3 and verticaldistance_Mv/imageheight_B <=0.5:
@@ -113,7 +114,7 @@ def _checkGeometry(image, shape):
     print("headw: %r %s" % (headwidth_ratio,image.image_name))
     print("headl: %r %s" % (headlength_ratio,image.image_name))
     print("headroll: %r %s" % (head_roll,image.image_name))
-        
+
     if image_ratio == True and horizontal_ratio == True and vertical_ratio == True and headwidth_ratio == True and headlength_ratio == True and head_roll==True:
         return "ICAO komform"
     else: return "nicht ICAO komform"
