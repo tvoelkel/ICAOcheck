@@ -5,6 +5,7 @@ import math
 import numpy
 import sys
 from matplotlib import pyplot as plt
+from matplotlib import pyplot as mpimg
 
 from skimage import io
 
@@ -13,6 +14,12 @@ def checkExpression(imagelist):
     for image in imagelist:
         #image.matching_type_list.append("Expression Check: ")
         #image.matching_score_list.append(image.image_name)
+        if not image.facial_landmarks_error:
+            image.matching_results["Expression"] =  _checkExpression(image, image.facial_landmarks)
+        else:
+            image.matching_results["Expression"] = "Failed: Number of detected faces != 1"
+
+        """
         image_data = io.imread(image.image_path + image.image_name)
 
         detector = dlib.get_frontal_face_detector()
@@ -21,7 +28,6 @@ def checkExpression(imagelist):
         #print("Processing file: {}".format(image.image_path + image.image_name))
 
         #ToDo get the facial landmarks
-
         # The 1 in the second argument indicates that we should upsample the image
         # 1 time.  This will make everything bigger and allow us to detect more
         # faces.
@@ -33,11 +39,11 @@ def checkExpression(imagelist):
         #win.clear_overlay()
         #win.set_image(image_data)
         #win.add_overlay(dets)
-        """only for testing
+        only for testing
         point_a = [2,3]
         point_b = [2,2]
         distance(point_a,point_b)
-        """
+
 
         #only for testing
         close_mouth = True
@@ -64,6 +70,66 @@ def checkExpression(imagelist):
             image.matching_results["Expression"]="No neutral expression, because the eyebrows are raised"
         elif no_smile == False:
             image.matching_results["Expression"]="No neutral expression, because the person smile (no 100 percent security)"
+        """
+
+def _checkExpression(image, shape):
+    #get image data
+    image_data = mpimg.imread(image.image_path + image.image_name)
+
+    #shape[n][m]: n is the facial landmark from 0 to 67, m is the pixel-coordinate (0 = x-value, 1 = y-value)
+    #description of n-values
+    #[0 - 16]: Jawline
+    #[17 - 21]: Right eyebrow (from model's perspective)
+    #[22 - 26]: Left eyebrow
+    #[27 - 35]: Nose
+    #[36 - 41]: Right eye
+    #[42 - 47]: Left eye
+    #[48 - 67]: Mouth
+
+    #point of the upper lip (in the middle - lower part)
+    point63 = (int(shape[63][0]), int(shape[63][1]))
+    #point of the lower lip (in the middle - upper part)
+    point67 = (int(shape[67][0]), int(shape[67][1]))
+    #point of the lower lip (in the middle - lower part)
+    point58 = (int(shape[58][0]), int(shape[58][1]))
+
+    #distance between upper and lower lip
+    between_lips = distance(point63,point67)
+    #distance between upper and lower part of the lower lip
+    lower_lip = distance(point67,point58)
+
+    #check whether the mouth is closed
+    if 2*between_lips<=lower_lip:
+        close_mouth = True
+    else:
+        close_mouth = False
+
+
+    no_smile = True
+    no_raisingEyebrows = True
+
+    #when all 3 characteristics are true, we have a neutral expression
+    if close_mouth == True and no_smile == True and no_raisingEyebrows == True:
+        output_text = "Neutral expression"
+    #otherwise (when one of the characteristics is false), we have no neutral expression
+    elif close_mouth == False:
+        output_text = "No neutral expression, because the mouth is open"
+    elif no_raisingEyebrows == False:
+        output_text = "No neutral expression, because the eyebrows are raised"
+    elif no_smile == False:
+        output_text ="No neutral expression, because the person smile (no 100 percent security)"
+    """
+    zahl1 = str(between_lips)
+    zahl2 = str(lower_lip)
+    zahl3 = str(point63[0])
+    zahl4 = str(point63[1])
+    zahl5 = str(point67[0])
+    zahl6 = str(point67[1])
+    zahl7 = str(point58[0])
+    zahl8 = str(point58[1])
+    output_text = output_text + zahl1 +"  "+ zahl2 +"..." +  zahl3 +"," + zahl4 + "//" + zahl5 + "," + zahl6 +"//" + zahl7 + "," + zahl8
+    """
+    return output_text
 
 #this function calculated the difference betwenn two points
 def distance(point_a,point_b):
@@ -75,5 +141,5 @@ def distance(point_a,point_b):
     pointb_y = point_b[1]
 
     #euclid distance between point_a and point_b
-    dist = math.sqrt(((pointb_x-pointa_x)**2)-((pointb_y-pointa_y)**2))
+    dist = math.sqrt(((pointb_x-pointa_x)**2)+((pointb_y-pointa_y)**2))
     return dist
