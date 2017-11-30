@@ -1,8 +1,5 @@
 from PIL import Image
 import cv2
-<<<<<<< HEAD
-#from matplotlib import pyplot as plt
-=======
 import numpy 
 from matplotlib import pyplot as plt
 
@@ -10,22 +7,10 @@ import sys
 import dlib
 from skimage import io
 
->>>>>>> 3b09df50b2f3abe480b54221686cafa0c24c8194
 
 def checkDynamicRange(imagelist):
     
     for image in imagelist:
-<<<<<<< HEAD
-        image_data = cv2.imread(image.image_path + image.image_name,0)
-        """color = ('b','g','r')
-        for i,col in enumerate(color):
-            histr = cv2.calcHist([image_data],[i])
-            plt.plot(histr,color = col)
-            plt.xlim([0,256])
-        plt.show()
-        """
-        image.matching_results["Dynamic Range"]= image_data
-=======
         #load image data
         image_data = io.imread(image.image_path + image.image_name)
         
@@ -68,4 +53,3 @@ def checkDynamicRange(imagelist):
 
 
 
->>>>>>> 3b09df50b2f3abe480b54221686cafa0c24c8194
