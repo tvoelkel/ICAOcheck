@@ -21,8 +21,10 @@ def checkGeometry(imagelist):
             image.matching_results["Geometry"] = "Failed: Number of detected faces != 1"
 
 def _checkGeometry(image, shape):
+    #get image data
+    image_data = mpimg.imread(image.image_path + image.image_name)
+    
     #shape[n][m]: n is the facial landmark from 0 to 67, m is the pixel-coordinate (0 = x-value, 1 = y-value)
-
     #description of n-values
     #[0 - 16]: Jawline
     #[17 - 21]: Right eyebrow (from model's perspective)
@@ -38,11 +40,6 @@ def _checkGeometry(image, shape):
     mouthCenter = (int((shape[62][0] + shape[66][0])/2), int((shape[62][1] + shape[66][1]) / 2))
     M = (int((leftEyeCenter[0] + rightEyeCenter[0]) / 2), int((leftEyeCenter[1] + rightEyeCenter[1]) / 2))
 
-    H = np.array([leftEyeCenter[0] - rightEyeCenter[0], leftEyeCenter[1] - rightEyeCenter[1]])
-
-    V = np.array([mouthCenter[0] - M[0], mouthCenter[1] - M[1]])
-
-
     #variables
     image_ratio=False
     horizontal_ratio=False
@@ -51,30 +48,16 @@ def _checkGeometry(image, shape):
     headlength_ratio=True
     head_roll=False
 
-    image_data = mpimg.imread(image.image_path + image.image_name)
-
-    #testwerte
-    '''imagewidth_A= 75
-    imageheight_B= 100
-    horizontaldistance_Mh= 35
-    verticaldistance_Mv= 40
-    headwidth_W= 40
-    headlength_L= 70'''
-
-    imagewidth_A= int (len(image_data[0])-1)
-    imageheight_B= int (len(image_data)-1)
+    #calculation of Terms
+    imagewidth_A= int (len(image_data[0]))
+    imageheight_B= int (len(image_data))
     horizontaldistance_Mh= int((leftEyeCenter[0] + rightEyeCenter[0]) / 2)
     verticaldistance_Mv= int((leftEyeCenter[1] + rightEyeCenter[1]) / 2)
     headwidth_W= int(shape[16][0]-shape[0][0])
-    #headlength_L= 70
+    headlength_L= 2*(shape[8][1] - M[1])
 
     #Pose angle requirement of head roll <=5°
-    # |Mh-V(x,0)| <= sin(5°)*Mv
-
-    #difference_exist= math.fabs((((mouthCenter[0]-M[0])/(mouthCenter[1]-M[1]))*(-M[1]))+M[0])
-    #difference_exist= math.fabs(((M[0]*-mouthCenter[1])+(-mouthCenter[0]*-M[1]))/(-M[1]+mouthCenter[1]))
     difference_allowed= math.fabs(verticaldistance_Mv*math.sin(math.radians(5)))
-
     dx=math.fabs(mouthCenter[0]-M[0])
     dy=math.fabs(mouthCenter[1]-M[1])
     if dx != 0:
@@ -82,6 +65,7 @@ def _checkGeometry(image, shape):
         dy2=M[1]
         dx=dy2/m
 
+    #geometric portrait requirement
     if dx<=difference_allowed:
         head_roll=True
 
@@ -97,14 +81,15 @@ def _checkGeometry(image, shape):
     if headwidth_W/imagewidth_A >= 0.5 and headwidth_W/imagewidth_A <= 0.75:
         headwidth_ratio=True
 
-    #if headlength_L/imageheight_B >= 0.6 and headlength_L/imageheight_B <= 0.9:
-    #    headlength_ratio=True
+    if headlength_L/imageheight_B >= 0.6 and headlength_L/imageheight_B <= 0.9:
+        headlength_ratio=True
 
     print("A: %i %s" % (imagewidth_A,image.image_name))
     print("B: %i %s" % (imageheight_B,image.image_name))
     print("Mh: %i %s" % (horizontaldistance_Mh,image.image_name))
     print("Mv: %i %s" % (verticaldistance_Mv,image.image_name))
     print("W: %i %s" % (headwidth_W,image.image_name))
+    print("L: %i %s" % (headlength_L,image.image_name))
     print("D_exist: %i %s" % (dx,image.image_name))
     print("D_allowed: %i %s" % (difference_allowed,image.image_name))
 
