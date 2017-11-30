@@ -3,74 +3,24 @@ import numpy as  np
 import os
 import sys
 import dlib
+import math
 from skimage import io
+
+from PIL import Image
+from matplotlib import pyplot as plt
+from matplotlib import pyplot as mpimg
+from scipy import misc
 
 def checkGeometry(imagelist):
     for image in imagelist:
         #load image data
         #image_data = io.imread(image.image_path + image.image_name)
-        
-        image_ratio=False
-        horizontal_ratio=False
-        vertical_ratio=False
-        headwidth_ratio=False
-        headlength_ratio=False
+        if not image.facial_landmarks_error:
+            image.matching_results["Geometry"] =  _checkGeometry(image, image.facial_landmarks)
+        else:
+            image.matching_results["Geometry"] = "Failed: Number of detected faces != 1"
 
-        #testwerte
-        imagewidth_A= 75
-        imageheight_B= 100
-        horizontaldistance_Mh= 35
-        verticaldistance_Mv= 40
-        headwidth_W= 40
-        headlength_L= 70
-
-        image.matching_results["Geometry"] = _checkGeometry(image)
-
-        if imagewidth_A/imageheight_B >= 0.74 and imagewidth_A/imageheight_B <= 0.8:
-            image_ratio=True
-        
-        if horizontaldistance_Mh/imagewidth_A >=0.45 and horizontaldistance_Mh/imagewidth_A <=0.55:           
-            horizontal_ratio=True
-
-        if verticaldistance_Mv/imageheight_B >=0.3 and verticaldistance_Mv/imageheight_B <=0.5:
-            vertical_ratio=True
-
-        if headwidth_W/imagewidth_A >= 0.5 and headwidth_W/imagewidth_A <= 0.75:
-            headwidth_ratio=True
-
-        if headlength_L/imageheight_B >= 0.6 and headlength_L/imageheight_B <= 0.9:
-            headlength_ratio=True
-
-        
-
-        if image_ratio == True and horizontal_ratio == True and vertical_ratio == True and headwidth_ratio == True and headlength_ratio == True:
-            image.matching_results["Geometry"]="ICAO komform"
-        else: image.matching_results["Geometry"]="nicht ICAO komform"
-
-def _checkGeometry(image):
-    detector = dlib.get_frontal_face_detector()
-    #load dlib pre-trained predictor
-    predictor = dlib.shape_predictor(getPredictorFilepath("shape_predictor_68_face_landmarks.dat"))
-
-    img = cv2.imread(image.image_path + image.image_name)
-    #second parameter defines the level of upscaling
-    #the more upscaling, the higher the required computational power
-    #returns an array containing a dlib.rectangle for each detected face
-    face_rectangle_array = detector(img, 0)
-
-    if len(face_rectangle_array) > 1:
-        return "Error: More than one face detected."
-    elif len(face_rectangle_array) == 0:
-        return "Error: No face detected."
-    else:
-        shape = shapeToArray(predictor(img, face_rectangle_array[0]))
-        return computeImage(img, shape)
-
-def getPredictorFilepath(predictorFilename):
-    #for this to work, the facial landmark predictor has to be located inside the same folder as "task_Lightning.py"
-    return os.path.realpath(__file__).replace('\\', '/').rsplit('/',1)[0]+'/'+predictorFilename
-
-def computeImage(image, shape):
+def _checkGeometry(image, shape):
     #shape[n][m]: n is the facial landmark from 0 to 67, m is the pixel-coordinate (0 = x-value, 1 = y-value)
 
     #description of n-values
@@ -89,22 +39,19 @@ def computeImage(image, shape):
     M = (int((leftEyeCenter[0] + rightEyeCenter[0]) / 2), int((leftEyeCenter[1] + rightEyeCenter[1]) / 2))
 
     H = np.array([leftEyeCenter[0] - rightEyeCenter[0], leftEyeCenter[1] - rightEyeCenter[1]])
-    IED = np.linalg.norm(H)
 
-    if IED < 90:
-        return "Failed: Inner eye distance smaller than 90px"
+    V = np.array([mouthCenter[0] - M[0], mouthCenter[1] - M[1]])   
 
-    V = np.array([mouthCenter[0] - M[0], mouthCenter[1] - M[1]])
-    EM = np.linalg.norm(V)
-    MP = 0.3 * IED
-    iMP = int(MP)
-    cheekLevelSpot = (int(M[0] + 0.5 * V[0]), int(M[1] + 0.5 * V[1]))
 
+    #variables
     image_ratio=False
     horizontal_ratio=False
     vertical_ratio=False
     headwidth_ratio=False
     headlength_ratio=True
+    head_roll=False
+
+    image_data = mpimg.imread(image.image_path + image.image_name)
 
     #testwerte
     '''imagewidth_A= 75
@@ -114,13 +61,28 @@ def computeImage(image, shape):
     headwidth_W= 40
     headlength_L= 70'''
 
-    imagewidth_A= int (len(image)-1)
-    imageheight_B= int (len(image_data[0])-1)
+    imagewidth_A= int (len(image_data[0])-1)
+    imageheight_B= int (len(image_data)-1)
     horizontaldistance_Mh= int((leftEyeCenter[0] + rightEyeCenter[0]) / 2)
     verticaldistance_Mv= int((leftEyeCenter[1] + rightEyeCenter[1]) / 2)
-    headwidth_W= int(shape[16][1]-shape[0][1])
+    headwidth_W= int(shape[16][0]-shape[0][0])
     #headlength_L= 70
 
+    #Pose angle requirement of head roll <=5°
+    # |Mh-V(x,0)| <= sin(5°)*Mv
+
+    #difference_exist= math.fabs((((mouthCenter[0]-M[0])/(mouthCenter[1]-M[1]))*(-M[1]))+M[0])
+    #difference_exist= math.fabs(((M[0]*-mouthCenter[1])+(-mouthCenter[0]*-M[1]))/(-M[1]+mouthCenter[1]))   
+    difference_allowed= math.fabs(verticaldistance_Mv*math.sin(math.radians(5)))
+
+    dx=math.fabs(mouthCenter[0]-M[0])
+    dy=math.fabs(mouthCenter[1]-M[1])
+    m=dy/dx
+    dy2=M[1]
+    dx=dy2/m
+
+    if dx<=difference_allowed:
+        head_roll=True
 
     if imagewidth_A/imageheight_B >= 0.74 and imagewidth_A/imageheight_B <= 0.8:
         image_ratio=True
@@ -136,17 +98,22 @@ def computeImage(image, shape):
 
     #if headlength_L/imageheight_B >= 0.6 and headlength_L/imageheight_B <= 0.9:
     #    headlength_ratio=True
+
+    print("A: %i %s" % (imagewidth_A,image.image_name))
+    print("B: %i %s" % (imageheight_B,image.image_name))
+    print("Mh: %i %s" % (horizontaldistance_Mh,image.image_name))
+    print("Mv: %i %s" % (verticaldistance_Mv,image.image_name))
+    print("W: %i %s" % (headwidth_W,image.image_name))
+    print("D_exist: %i %s" % (dx,image.image_name))
+    print("D_allowed: %i %s" % (difference_allowed,image.image_name))
+
+    print("image: %r %s" % (image_ratio,image.image_name))
+    print("hori: %r %s" % (horizontal_ratio,image.image_name))
+    print("verti: %r %s" % (vertical_ratio,image.image_name))
+    print("headw: %r %s" % (headwidth_ratio,image.image_name))
+    print("headl: %r %s" % (headlength_ratio,image.image_name))
+    print("headroll: %r %s" % (head_roll,image.image_name))
         
-    if image_ratio == True and horizontal_ratio == True and vertical_ratio == True and headwidth_ratio == True and headlength_ratio == True:
+    if image_ratio == True and horizontal_ratio == True and vertical_ratio == True and headwidth_ratio == True and headlength_ratio == True and head_roll==True:
         return "ICAO komform"
     else: return "nicht ICAO komform"
-
-def shapeToArray(shape):
-    #convert dlib shape object to array
-    array = np.zeros((68,2), dtype=np.int)
-
-    #iterate over the facial landmarks
-    for i in range(0, 68):
-        array[i] = (shape.part(i).x, shape.part(i).y)
-
-    return array
