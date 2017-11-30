@@ -84,6 +84,7 @@ def _checkGeometry(image, shape):
     if headlength_L/imageheight_B >= 0.6 and headlength_L/imageheight_B <= 0.9:
         headlength_ratio=True
 
+    #output of values
     print("A: %i %s" % (imagewidth_A,image.image_name))
     print("B: %i %s" % (imageheight_B,image.image_name))
     print("Mh: %i %s" % (horizontaldistance_Mh,image.image_name))
@@ -100,6 +101,20 @@ def _checkGeometry(image, shape):
     print("headl: %r %s" % (headlength_ratio,image.image_name))
     print("headroll: %r %s" % (head_roll,image.image_name))
 
+    ausgabe="nicht ICAO komform"
+    if image_ratio == False:
+        ausgabe=ausgabe+", Seitenverhältnis des Bildes nicht korrekt"
+    if horizontal_ratio == False or vertical_ratio == False:
+        ausgabe=ausgabe+", Gesicht nicht mittig"
+    if headwidth_ratio == False:
+        ausgabe=ausgabe+", Verhältnis: Kopfbreite/Bildbreite passt nicht"
+    if headlength_ratio == False:
+        ausgabe=ausgabe+", Verhältnis Kopflänge/Bildlänge passt nicht"
+    if head_roll==False:
+        ausgabe=ausgabe+", Kopf zu stark gedreht"
+
+
     if image_ratio == True and horizontal_ratio == True and vertical_ratio == True and headwidth_ratio == True and headlength_ratio == True and head_roll==True:
         return "ICAO komform"
-    else: return "nicht ICAO komform"
+    else: 
+        return ausgabe
