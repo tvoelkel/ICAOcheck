@@ -87,16 +87,16 @@ def _checkExpression(image, shape):
     #[48 - 67]: Mouth
 
     #point of the upper lip (in the middle - lower part)
-    point63 = (int(shape[63][0]), int(shape[63][1]))
+    point62 = (int(shape[62][0]), int(shape[62][1]))
     #point of the lower lip (in the middle - upper part)
-    point67 = (int(shape[67][0]), int(shape[67][1]))
+    point66 = (int(shape[66][0]), int(shape[66][1]))
     #point of the lower lip (in the middle - lower part)
-    point58 = (int(shape[58][0]), int(shape[58][1]))
+    point57 = (int(shape[57][0]), int(shape[57][1]))
 
     #distance between upper and lower lip
-    between_lips = distance(point63,point67)
+    between_lips = distance(point62,point66)
     #distance between upper and lower part of the lower lip
-    lower_lip = distance(point67,point58)
+    lower_lip = distance(point66,point57)
 
     #check whether the mouth is closed
     if 2*between_lips<=lower_lip:
@@ -118,17 +118,9 @@ def _checkExpression(image, shape):
         output_text = "No neutral expression, because the eyebrows are raised"
     elif no_smile == False:
         output_text ="No neutral expression, because the person smile (no 100 percent security)"
-    """
-    zahl1 = str(between_lips)
-    zahl2 = str(lower_lip)
-    zahl3 = str(point63[0])
-    zahl4 = str(point63[1])
-    zahl5 = str(point67[0])
-    zahl6 = str(point67[1])
-    zahl7 = str(point58[0])
-    zahl8 = str(point58[1])
-    output_text = output_text + zahl1 +"  "+ zahl2 +"..." +  zahl3 +"," + zahl4 + "//" + zahl5 + "," + zahl6 +"//" + zahl7 + "," + zahl8
-    """
+
+    output_text = output_text
+
     return output_text
 
 #this function calculated the difference betwenn two points
