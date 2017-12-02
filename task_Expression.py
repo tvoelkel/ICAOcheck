@@ -104,7 +104,14 @@ def _checkExpression(image, shape):
     else:
         close_mouth = False
 
-
+    #left eyebrow (middle point)
+    point19 = (int(shape[19][0]), int(shape[19][1]))
+    #left eye (middle point)
+    point37 = (int(shape[37][0]), int(shape[37][1]))
+    #right eyebrow (middle point)
+    point24 = (int(shape[24][0]), int(shape[24][1]))
+    #right eye (middle point)
+    point44 = (int(shape[44][0]), int(shape[44][1]))
     no_smile = True
     no_raisingEyebrows = True
 
@@ -119,7 +126,11 @@ def _checkExpression(image, shape):
     elif no_smile == False:
         output_text ="No neutral expression, because the person smile (no 100 percent security)"
 
-    output_text = output_text
+    zahl1 = str(point19[0])
+    zahl2 = str(point19[1])
+    zahl3 = str(point24[0])
+    zahl4 = str(point24[1])
+    #output_text = zahl1 +", "+zahl2 + " / " + zahl3 + ", " + zahl4
 
     return output_text
 
