@@ -20,6 +20,8 @@ from task_Contrast import checkContrast
 
 import os
 import cv2
+import dlib
+import numpy as np
 
 class Singleton(type):
     _instances = {}
@@ -98,9 +100,13 @@ class myUI(Frame, metaclass=Singleton):
 
     def check_images(self):
         if(self.file_list != []):
+            detector = dlib.get_frontal_face_detector()
+            #load dlib pre-trained predictor
+            predictor = dlib.shape_predictor(os.path.realpath(__file__).replace('\\', '/').rsplit('/',1)[0]+'/'+"shape_predictor_68_face_landmarks.dat")
+            
             for image in self.file_list:
                 #run helper function to set the facial landmark array for each image and set a flag whether the number of faces != 1
-                (image.facial_landmarks, image.facial_landmarks_error) = getFacialLandmarks(image)
+                (image.facial_landmarks, image.facial_landmarks_error) = getFacialLandmarks(image,detector,predictor)
 
         #    checkExpression(self.file_list)
         #    checkGlasses(self.file_list)
@@ -108,6 +114,7 @@ class myUI(Frame, metaclass=Singleton):
         #    checkLighting(self.file_list)
         #    checkBackground(self.file_list)
         #    checkDynamicRange(self.file_list)
+        #    checkContast(self.file_list)
         #    checkGeometry(self.file_list)
 
             self.display_result(self.file_list[self.currentDisplayedResult-1])
