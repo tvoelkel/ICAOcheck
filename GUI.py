@@ -180,13 +180,13 @@ class myUI(Frame, metaclass=Singleton):
             self.backgroundtypeLabel= Label(self, textvariable = self.background_type_label)
             self.backgroundtypeLabel.grid(row = 11, column = 6, sticky = W)
             self.background_type_label.set(str("Background:"))
-
-            self.dynamicrangetypLabel= Label(self, textvariable = self.dynamicrange_type_label)
-            self.dynamicrangetypLabel.grid(row = 12, column = 6, sticky = W)
+        
+            self.dynamicrangetypeLabel= Label(self, textvariable = self.dynamicrange_type_label)
+            self.dynamicrangetypeLabel.grid(row = 12, column = 6, sticky = W)
             self.dynamicrange_type_label.set(str("Dynamic Range:"))
 
-            self.contrasttypLabel= Label(self, textvariable = self.contrast_type_label)
-            self.contrasttypLabel.grid(row = 13, column = 6, sticky = W)
+            self.contrasttypeLabel= Label(self, textvariable = self.contrast_type_label)
+            self.contrasttypeLabel.grid(row = 13, column = 6, sticky = W)
             self.contrast_type_label.set(str("Contrast:"))
 
             #Tom
@@ -218,7 +218,7 @@ class myUI(Frame, metaclass=Singleton):
             self.backgroundscoreLabel.grid(row = 11, column = 7, sticky = W)
             self.background_score_label.set(str(matchableImg.matching_results["Background"]))
 
-            self.dynamicrangeLabel= Label(self, textvariable = self.dynamicrange_score_label)
+            self.dynamicrangeLabel= Label(self, textvariable = self.dynamicrange_score_label) 
             self.dynamicrangeLabel.grid(row = 12, column = 7, sticky = W)
             self.dynamicrange_score_label.set(str(matchableImg.matching_results["Dynamic Range"]))
 
