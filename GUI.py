@@ -185,8 +185,8 @@ class myUI(Frame, metaclass=Singleton):
             self.dynamicrangetypeLabel.grid(row = 12, column = 6, sticky = W)
             self.dynamicrange_type_label.set(str("Dynamic Range:"))
 
-            self.contrasttypLabel= Label(self, textvariable = self.contrast_type_label)
-            self.contrasttypLabel.grid(row = 13, column = 6, sticky = W)
+            self.contrasttypeLabel= Label(self, textvariable = self.contrast_type_label)
+            self.contrasttypeLabel.grid(row = 13, column = 6, sticky = W)
             self.contrast_type_label.set(str("Contrast:"))
 
             #Tom
