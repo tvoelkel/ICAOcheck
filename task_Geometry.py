@@ -134,15 +134,19 @@ def _checkGeometry(image, shape):
     #cut
     if image_ratio == False or horizontal_ratio == False or vertical_ratio == False or headwidth_ratio == False or headlength_ratio == False or head_roll==False:
         cut_img = cut(image_data,imagewidth_A,imageheight_B,horizontaldistance_Mh,verticaldistance_Mv,headwidth_W,headlength_L,difference_allowed,dx,M)
-        y1=array[0]
-        y2=array[1]
-        x1=array[2]
-        x2=array[3]
-        cutted_img= image_data[y1:y2,x1:x2]
-        ausgabe=ausgabe+" || Zuschnitt ist möglich"
-        #cutted_img.save(image.image_path[:-1]+"-result\\" + image.image_name+"-cut")
-        cv2.imwrite(result_path+"\\" + image.image_name[:-4]+"-cut.jpg", cutted_img)
-        #cv2.imshow("cutted", cutted_img)
+        if cut_img==True:
+            y1=array[0]
+            y2=array[1]
+            x1=array[2]
+            x2=array[3]
+        
+            cutted_img= image_data[y1:y2,x1:x2]
+            ausgabe=ausgabe+" || Zuschnitt ist möglich"
+            #cutted_img.save(image.image_path[:-1]+"-result\\" + image.image_name+"-cut")
+            cv2.imwrite(result_path+"\\" + image.image_name[:-4]+"-cut.jpg", cutted_img)
+            #cv2.imshow("cutted", cutted_img)
+        else:
+            ausgabe=ausgabe+" || Zuschnitt nicht möglich"
 
     return ausgabe
 
@@ -216,31 +220,57 @@ def cut(image_data,A,B,Mh,Mv,W,L,difference_allowed,dx,M):
     #new_A=A
     #new_B=B
 
-    new_A=W/0.74
-    new_B=L/0.89
+    new_A=W/0.65
+    new_B=L/0.75
 
     if new_A/new_B <0.74:
         new_A=new_B*0.75
     if new_A/new_B >0.8:
         new_B=new_A/0.79
-        
+
     new_Mh= Mh-((Mh-new_A/2))
-    new_Mv=Mv-((Mv-new_B*0.4))
+    new_Mv=Mv-((Mv-new_B*0.48))
 
     proof(image_data,new_A,new_B,new_Mh,new_Mv,W,L,difference_allowed,dx)
-
-    if image_ratio == True and horizontal_ratio == True and vertical_ratio == True and headwidth_ratio == True and headlength_ratio == True and head_roll==True:           
-        x1=int(Mh-new_Mh)
-        x2=int(x1+new_A)
-        y1=int(Mv-new_Mv)
-        y2=int(y1+new_B)
+    
+    x1=int(Mh-new_Mh)
+    x2=int(x1+new_A)
+    y1=int(Mv-new_Mv)
+    y2=int(y1+new_B)
+    
+    if image_ratio == True and horizontal_ratio == True and vertical_ratio == True and headwidth_ratio == True and headlength_ratio == True and head_roll==True and x1>=0 and y1>=0 and x2<=image_w and y2<=image_l:           
         array[0] = (y1)
         array[1] = (y2)
         array[2] = (x1)
         array[3] = (x2)
-        return 1
+        return True
     else:
-        cut(image_data,new_A,new_B,new_Mh,new_Mv,W,L,difference_allowed,dx,M)
+        #cut(image_data,new_A,new_B,new_Mh,new_Mv,W,L,difference_allowed,dx,M)
+        new_A=W/0.74
+        new_B=L/0.89
+
+        if new_A/new_B <0.74:
+            new_A=new_B*0.75
+        if new_A/new_B >0.8:
+            new_B=new_A/0.79
+
+        new_Mh= Mh-((Mh-new_A/2))
+        new_Mv=Mv-((Mv-new_B*0.4))
+        
+        proof(image_data,new_A,new_B,new_Mh,new_Mv,W,L,difference_allowed,dx)
+
+        if image_ratio == True and horizontal_ratio == True and vertical_ratio == True and headwidth_ratio == True and headlength_ratio == True and head_roll==True:           
+            x1=int(Mh-new_Mh)
+            x2=int(x1+new_A)
+            y1=int(Mv-new_Mv)
+            y2=int(y1+new_B)
+            array[0] = (y1)
+            array[1] = (y2)
+            array[2] = (x1)
+            array[3] = (x2)
+            return True
+        else:
+            return False
 
     '''    
     if horizontal_ratio == False: 
