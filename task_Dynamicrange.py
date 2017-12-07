@@ -36,13 +36,15 @@ def _checkDynamicRange(image):
     image_data_np = numpy.asarray(image_data)
     print(image_data_np.shape)
 
+    image_data_np = image_data_np[dets[0].top() : dets[0].bottom() , dets[0].left() : dets[0].right(), 0:2]
+
     image_data_np_red = image_data_np[...,0]
     image_data_np_green = image_data_np[...,1]
     image_data_np_blue = image_data_np[...,2]
 
-    image_data_np_red = image_data_np_red[dets[0].top() : dets[0].bottom() , dets[0].left() : dets[0].right()]
-    image_data_np_green = image_data_np_green[dets[0].top() : dets[0].bottom() , dets[0].left() : dets[0].right()]
-    image_data_np_blue = image_data_np_blue[dets[0].top() : dets[0].bottom() , dets[0].left() : dets[0].right()]
+    #image_data_np_red = image_data_np_red[dets[0].top() : dets[0].bottom() , dets[0].left() : dets[0].right()]
+    #image_data_np_green = image_data_np_green[dets[0].top() : dets[0].bottom() , dets[0].left() : dets[0].right()]
+    #image_data_np_blue = image_data_np_blue[dets[0].top() : dets[0].bottom() , dets[0].left() : dets[0].right()]
 
     hist_red = numpy.histogram(image_data_np_red,255)
     hist_green = numpy.histogram(image_data_np_green,255)
