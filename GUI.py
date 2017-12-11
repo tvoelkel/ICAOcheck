@@ -20,6 +20,8 @@ from task_Contrast import checkContrast
 
 import os
 import cv2
+import dlib
+import numpy as np
 
 class Singleton(type):
     _instances = {}
@@ -98,9 +100,13 @@ class myUI(Frame, metaclass=Singleton):
 
     def check_images(self):
         if(self.file_list != []):
+            detector = dlib.get_frontal_face_detector()
+            #load dlib pre-trained predictor
+            predictor = dlib.shape_predictor(os.path.realpath(__file__).replace('\\', '/').rsplit('/',1)[0]+'/'+"shape_predictor_68_face_landmarks.dat")
+            
             for image in self.file_list:
                 #run helper function to set the facial landmark array for each image and set a flag whether the number of faces != 1
-                (image.facial_landmarks, image.facial_landmarks_error) = getFacialLandmarks(image)
+                (image.facial_landmarks, image.facial_landmarks_error) = getFacialLandmarks(image,detector,predictor)
 
         #    checkExpression(self.file_list)
         #    checkGlasses(self.file_list)
@@ -108,6 +114,7 @@ class myUI(Frame, metaclass=Singleton):
         #    checkLighting(self.file_list)
         #    checkBackground(self.file_list)
         #    checkDynamicRange(self.file_list)
+        #    checkContast(self.file_list)
         #    checkGeometry(self.file_list)
 
             self.display_result(self.file_list[self.currentDisplayedResult-1])
@@ -173,13 +180,13 @@ class myUI(Frame, metaclass=Singleton):
             self.backgroundtypeLabel= Label(self, textvariable = self.background_type_label)
             self.backgroundtypeLabel.grid(row = 11, column = 6, sticky = W)
             self.background_type_label.set(str("Background:"))
-
-            self.dynamicrangetypLabel= Label(self, textvariable = self.dynamicrange_type_label)
-            self.dynamicrangetypLabel.grid(row = 12, column = 6, sticky = W)
+        
+            self.dynamicrangetypeLabel= Label(self, textvariable = self.dynamicrange_type_label)
+            self.dynamicrangetypeLabel.grid(row = 12, column = 6, sticky = W)
             self.dynamicrange_type_label.set(str("Dynamic Range:"))
 
-            self.contrasttypLabel= Label(self, textvariable = self.contrast_type_label)
-            self.contrasttypLabel.grid(row = 13, column = 6, sticky = W)
+            self.contrasttypeLabel= Label(self, textvariable = self.contrast_type_label)
+            self.contrasttypeLabel.grid(row = 13, column = 6, sticky = W)
             self.contrast_type_label.set(str("Contrast:"))
 
             #Tom
@@ -211,7 +218,7 @@ class myUI(Frame, metaclass=Singleton):
             self.backgroundscoreLabel.grid(row = 11, column = 7, sticky = W)
             self.background_score_label.set(str(matchableImg.matching_results["Background"]))
 
-            self.dynamicrangeLabel= Label(self, textvariable = self.dynamicrange_score_label)
+            self.dynamicrangeLabel= Label(self, textvariable = self.dynamicrange_score_label) 
             self.dynamicrangeLabel.grid(row = 12, column = 7, sticky = W)
             self.dynamicrange_score_label.set(str(matchableImg.matching_results["Dynamic Range"]))
 

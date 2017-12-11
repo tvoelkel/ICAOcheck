@@ -54,20 +54,25 @@ def computeImage(image, shape):
     leftCheekMeasureRect = (int(cheekLevelSpot[0] + 0.5 * H[0]), int(cheekLevelSpot[1] + 0.5 * H[1]), iMP, iMP)
 
     #get Intensity values for specific channels of all regions
-    (blueValues, greenValues, redValues) = intensityCheck(image, (rightCheekMeasureRect, leftCheekMeasureRect, chinMeasureRect, foreheadMeasureRect))
+    blueValues, greenValues, redValues, blueLN, greenLN, redLN = intensityCheck(image, (rightCheekMeasureRect, leftCheekMeasureRect, chinMeasureRect, foreheadMeasureRect))
 
-    if len(blueValues) < 3:
-        return "Failed:  Not enough homogeneous facial zones."
-    elif min(blueValues) < 0.5 * max(blueValues) or min(greenValues) < 0.5 * max(greenValues) or min(redValues) < 0.5 * max(redValues):
-        return "Failed: Light intensity difference too high."
-    else:
+    if (min(blueValues) >= 0.5 * max(blueValues) and min(greenValues) >= 0.5 * max(greenValues) and min(redValues) >= 0.5 * max(redValues)) or (min(blueLN) >= 0.5 * max(blueLN) and min(greenLN) >= 0.5 * max(greenLN) and min(redLN) >= 0.5 * max(redLN) and len(blueLN) > 2):
         return "Passed."
+    elif len(blueLN) < 3:
+        return "Failed:  Not enough homogeneous facial zones."
+    else:
+        return "Failed: Light intensity difference too high."
+
 
 def intensityCheck(image, rectangles):
     cropList = []
     redVals = []
     blueVals = []
     greenVals = []
+
+    redValsLowNoise = []
+    blueValsLowNoise = []
+    greenValsLowNoise = []
 
     img = cv2.imread(image.image_path + image.image_name)
     debugDisplayImage = img
@@ -82,10 +87,15 @@ def intensityCheck(image, rectangles):
         #print(np.count_nonzero(edges))
         #cv2.imshow(str(i), cropGray)
 
+        blueVals.append(np.mean(crop[:,:,0]))
+        greenVals.append(np.mean(crop[:,:,1]))
+        redVals.append(np.mean(crop[:,:,2]))
+
         if np.count_nonzero(edges) < 1.5 * w:
-            blueVals.append(np.mean(crop[:,:,0]))
-            greenVals.append(np.mean(crop[:,:,1]))
-            redVals.append(np.mean(crop[:,:,2]))
+            blueValsLowNoise.append(np.mean(crop[:,:,0]))
+            greenValsLowNoise.append(np.mean(crop[:,:,1]))
+            redValsLowNoise.append(np.mean(crop[:,:,2]))
+
 
             #debugging
             #cv2.rectangle(debugDisplayImage, (x, y), (x + w, y + h), (0, 255, 0), 2)
@@ -96,4 +106,4 @@ def intensityCheck(image, rectangles):
 
     #debugging
     #cv2.imshow(str(image), debugDisplayImage)
-    return (blueVals, greenVals, redVals)
+    return blueVals, greenVals, redVals, blueValsLowNoise, greenValsLowNoise, redValsLowNoise
