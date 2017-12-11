@@ -112,6 +112,13 @@ def _checkExpression(image, shape):
     point24 = (int(shape[24][0]), int(shape[24][1]))
     #right eye (middle point)
     point44 = (int(shape[44][0]), int(shape[44][1]))
+
+    #right mouth point
+    point48 = (int(shape[48][0]), int(shape[48][0]))
+    #left mouth point
+    point54 = (int(shape[54][0]), int(shape[48][0]))
+
+
     no_smile = True
     no_raisingEyebrows = True
 
@@ -126,12 +133,13 @@ def _checkExpression(image, shape):
     elif no_smile == False:
         output_text ="No neutral expression, because the person smile (no 100 percent security)"
 
-    zahl1 = str(point19[0])
-    zahl2 = str(point19[1])
-    zahl3 = str(point24[0])
-    zahl4 = str(point24[1])
-    #output_text = zahl1 +", "+zahl2 + " / " + zahl3 + ", " + zahl4
-
+    zahl1 = str(point48[0])
+    zahl2 = str(point48[1])
+    zahl3 = str(point66[0])
+    zahl4 = str(point66[1])
+    zahl5 = str(point54[0])
+    zahl6 = str(point54[1])
+    output_text = output_text+zahl1 +", "+zahl2 + " / " + zahl3 + ", " + zahl4 + "/" + zahl5 + ", " + zahl6
     return output_text
 
 #this function calculated the difference betwenn two points
