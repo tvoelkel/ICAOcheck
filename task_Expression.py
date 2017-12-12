@@ -161,7 +161,7 @@ def _checkExpression(image, shape):
     zahl7 = str(relPoint62)
     zahl8 = str(relPoint66)
     zahl9 = str(relPoint66 - relPoint62)
-    output_text = output_text + zahl9#zahl7 + "/" +zahl8#+ zahl1 +", "+zahl2 + " / " + zahl3 + ", " + zahl4 + "/" + zahl5 + ", " + zahl6
+    #output_text = output_text + zahl9#zahl7 + "/" +zahl8#+ zahl1 +", "+zahl2 + " / " + zahl3 + ", " + zahl4 + "/" + zahl5 + ", " + zahl6
     #"//" + str(between_lips) + "//" + str(lower_lip)
     return output_text
 
