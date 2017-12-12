@@ -24,16 +24,20 @@ image_l=0
 array = np.zeros((4), dtype = np.int)
 ausrichtung= "m"
 result_path=""
+check_cut=0
 
-def checkGeometry(imagelist):
+def checkGeometry(imagelist,Check_Cut):
     global result_path
+    global check_cut
+    check_cut=Check_Cut
+    
+    print(str(check_cut))
 
-    now= datetime.now()
-    _now='%s.%s.%s_%s-%s-%s' % (now.day, now.month, now.year, now.hour, now.minute, now.second)
-    
-    result_path=imagelist[0].image_path[:-1]+"-result"+str(_now)
-    
-    os.mkdir(result_path)
+    if check_cut==1:
+        now= datetime.now()
+        _now='%s.%s.%s_%s-%s-%s' % (now.day, now.month, now.year, now.hour, now.minute, now.second)
+        result_path=imagelist[0].image_path[:-1]+"-result"+str(_now)
+        os.mkdir(result_path)
 
     for image in imagelist:
         #load image data
@@ -121,15 +125,15 @@ def _checkGeometry(image, shape):
     else:
         ausgabe="nicht ICAO konform"
     if image_ratio == False:
-        ausgabe=ausgabe+", Seitenverhältnis des Bildes nicht korrekt"
+        ausgabe=ausgabe+", \nSeitenverhältnis des Bildes nicht korrekt"
     if horizontal_ratio == False or vertical_ratio == False:
-        ausgabe=ausgabe+", Gesicht nicht mittig"
+        ausgabe=ausgabe+", \nGesicht nicht mittig"
     if headwidth_ratio == False:
-        ausgabe=ausgabe+", Verhältnis: Kopfbreite/Bildbreite passt nicht"
+        ausgabe=ausgabe+", \nVerhältnis: Kopfbreite/Bildbreite passt nicht"
     if headlength_ratio == False:
-        ausgabe=ausgabe+", Verhältnis Kopflänge/Bildlänge passt nicht"
+        ausgabe=ausgabe+", \nVerhältnis: Kopflänge/Bildlänge passt nicht"
     if head_roll==False:
-        ausgabe=ausgabe+", Kopf zu stark gedreht"
+        ausgabe=ausgabe+", \nKopf zu stark gedreht"
 
     #cut
     if image_ratio == False or horizontal_ratio == False or vertical_ratio == False or headwidth_ratio == False or headlength_ratio == False or head_roll==False:
@@ -141,12 +145,12 @@ def _checkGeometry(image, shape):
             x2=array[3]
         
             cutted_img= image_data[y1:y2,x1:x2]
-            ausgabe=ausgabe+" || Zuschnitt ist möglich"
-            #cutted_img.save(image.image_path[:-1]+"-result\\" + image.image_name+"-cut")
-            cv2.imwrite(result_path+"\\" + image.image_name[:-4]+"-cut.jpg", cutted_img)
+            ausgabe=ausgabe+" \n--> Zuschnitt ist möglich"
+            if check_cut==1:
+                cv2.imwrite(result_path+"\\" + image.image_name[:-4]+"-cut.jpg", cutted_img)
             #cv2.imshow("cutted", cutted_img)
         else:
-            ausgabe=ausgabe+" || Zuschnitt nicht möglich"
+            ausgabe=ausgabe+" \n--> Zuschnitt nicht möglich"
 
     return ausgabe
 

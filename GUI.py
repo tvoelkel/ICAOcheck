@@ -23,6 +23,8 @@ import cv2
 import dlib
 import numpy as np
 
+Check_Cut=False
+
 class Singleton(type):
     _instances = {}
     def __call__(cls, *args, **kwargs):
@@ -31,9 +33,12 @@ class Singleton(type):
         return cls._instances[cls]
 
 class myUI(Frame, metaclass=Singleton):
+    
     def __init__(self):
         Frame.__init__(self)
         #variables
+        Check_Cut = IntVar()
+
         self.filepath_label = StringVar()
         self.score_label = StringVar()
         self.type_label = StringVar()
@@ -65,7 +70,7 @@ class myUI(Frame, metaclass=Singleton):
 
         #define Window properties
         self.master.title("ICAOcheck")
-        self.master.minsize(width=600, height=490)
+        self.master.minsize(width=800, height=490)
         self.grid_rowconfigure(0, minsize = 10)
         self.grid_rowconfigure(2, minsize = 10)
         self.grid_rowconfigure(4, minsize = 10)
@@ -75,12 +80,18 @@ class myUI(Frame, metaclass=Singleton):
 
         #define Window objects
         self.filepathLabel = Label(self, textvariable = self.filepath_label)
-        self.filepathLabel.grid(row=1, column=2, sticky=W, columnspan = 10)
+        self.filepathLabel.grid(row=1, column=2, sticky=W,columnspan = 10)
         self.browseButton = Button(self, text="Browse", command=self.load_files, width=10)
         self.browseButton.grid(row=1, column=1, sticky=W)
         self.checkButton = Button(self, text="Check", command=self.check_images, width=10)
         self.checkButton.grid(row=3, column=1, sticky=W)
+        self.checkBox=Checkbutton(self,text="wenn möglich nach ICAO-Standard zuschneiden", command=self.check_cut)
+        self.checkBox.grid(row=3, column=2,columnspan=3, sticky=W)
 
+
+    def check_cut (self):
+        global Check_Cut
+        Check_Cut= not Check_Cut
 
     def load_files(self):
         #load all files in the same directory as the selected file
@@ -99,6 +110,8 @@ class myUI(Frame, metaclass=Singleton):
             self.display_result(self.file_list[0])
 
     def check_images(self):
+        global Check_Cut
+
         if(self.file_list != []):
             detector = dlib.get_frontal_face_detector()
             #load dlib pre-trained predictor
@@ -115,7 +128,7 @@ class myUI(Frame, metaclass=Singleton):
         #    checkBackground(self.file_list)
         #    checkDynamicRange(self.file_list)
         #    checkContast(self.file_list)
-        #    checkGeometry(self.file_list)
+            checkGeometry(self.file_list,Check_Cut)
 
             self.display_result(self.file_list[self.currentDisplayedResult-1])
         #ToDo
@@ -134,7 +147,7 @@ class myUI(Frame, metaclass=Singleton):
         self.imageWindow = Canvas(self, width = 280, height = 360)
         self.imageWindow.create_image(0,0, anchor = NW, image = photo)
         self.imageWindow.image = photo
-        self.imageWindow.grid(row = 7, column = 1, rowspan = 9, columnspan = 5, sticky=W+N)
+        self.imageWindow.grid(row = 7, column = 1, rowspan = 9, columnspan = 2, sticky=W+N)
 
         #display matching results for currently displayed image
         #self.scoreLabel = Label(self, textvariable = self.score_label)
@@ -142,93 +155,93 @@ class myUI(Frame, metaclass=Singleton):
 
         #draw label that shows the image we are currently seeing
         self.pageLabel = Label(self, textvariable = self.filenumber_label)
-        self.pageLabel.grid(row=5, column=2)
+        self.pageLabel.grid(row=6, column=1, sticky=N)
         self.filenumber_label.set(str(self.currentDisplayedResult)+" / "+str(len(self.file_list)))
 
         #draw Button for iteration back through the images
         if self.currentDisplayedResult > 1:
             self.back = Button(self, text="<", command = lambda: self.switchDisplayedImage(-1))
-            self.back.grid(row=5, column=1, sticky=E)
+            self.back.grid(row=6, column=1, sticky=W)
 
         #draw Button for iteration forward through the images
         if self.currentDisplayedResult < len(self.file_list):
             self.forth = Button(self, text=">", command = lambda: self.switchDisplayedImage(1))
-            self.forth.grid(row=5, column=3, sticky=E)
+            self.forth.grid(row=6, column=1, sticky=E)
 
         if (len(self.file_list) > 0):
             #type
 
             #Patrick
             self.expressiontypeLabel= Label(self, textvariable = self.expression_type_label)
-            self.expressiontypeLabel.grid(row = 7, column = 6, sticky = W)
+            self.expressiontypeLabel.grid(row = 7, column = 4, sticky = W)
             self.expression_type_label.set(str("Expression:"))
 
             self.glassestypeLabel= Label(self, textvariable = self.glasses_type_label)
-            self.glassestypeLabel.grid(row = 8, column = 6, sticky = W)
+            self.glassestypeLabel.grid(row = 8, column = 4, sticky = W)
             self.glasses_type_label.set(str("Glasses:"))
 
             #Tobias
             self.colortypeLabel= Label(self, textvariable = self.color_type_label)
-            self.colortypeLabel.grid(row = 9, column = 6, sticky = W)
+            self.colortypeLabel.grid(row = 9, column = 4, sticky = W)
             self.color_type_label.set(str("Color:"))
 
             self.lightingtypeLabel= Label(self, textvariable = self.lighting_type_label)
-            self.lightingtypeLabel.grid(row = 10, column = 6, sticky = W)
+            self.lightingtypeLabel.grid(row = 10, column = 4, sticky = W)
             self.lighting_type_label.set(str("Lighting:"))
 
             #Tim
             self.backgroundtypeLabel= Label(self, textvariable = self.background_type_label)
-            self.backgroundtypeLabel.grid(row = 11, column = 6, sticky = W)
+            self.backgroundtypeLabel.grid(row = 11, column = 4, sticky = W)
             self.background_type_label.set(str("Background:"))
         
             self.dynamicrangetypeLabel= Label(self, textvariable = self.dynamicrange_type_label)
-            self.dynamicrangetypeLabel.grid(row = 12, column = 6, sticky = W)
+            self.dynamicrangetypeLabel.grid(row = 12, column = 4, sticky = W)
             self.dynamicrange_type_label.set(str("Dynamic Range:"))
 
             self.contrasttypeLabel= Label(self, textvariable = self.contrast_type_label)
-            self.contrasttypeLabel.grid(row = 13, column = 6, sticky = W)
+            self.contrasttypeLabel.grid(row = 13, column = 4, sticky = W)
             self.contrast_type_label.set(str("Contrast:"))
 
             #Tom
             self.geometrytypeLabel= Label(self, textvariable = self.geometry_type_label)
-            self.geometrytypeLabel.grid(row = 14, column = 6, sticky = W)
+            self.geometrytypeLabel.grid(row = 14, column = 4, sticky = W)
             self.geometry_type_label.set(str("Geometry:"))
 
             #score
             #Patrick
             self.expressionscoreLabel= Label(self, textvariable = self.expression_score_label)
-            self.expressionscoreLabel.grid(row = 7, column = 7, sticky = W)
+            self.expressionscoreLabel.grid(row = 7, column = 5, sticky = W)
             self.expression_score_label.set(str(matchableImg.matching_results["Expression"]))
 
             self.glassesscoreLabel= Label(self, textvariable = self.glasses_score_label)
-            self.glassesscoreLabel.grid(row = 8, column = 7, sticky = W)
+            self.glassesscoreLabel.grid(row = 8, column = 5, sticky = W)
             self.glasses_score_label.set(str(matchableImg.matching_results["Glasses"]))
 
             #Tobias
             self.colorscoreLabel= Label(self, textvariable = self.color_score_label)
-            self.colorscoreLabel.grid(row = 9, column = 7, sticky = W)
+            self.colorscoreLabel.grid(row = 9, column = 5, sticky = W)
             self.color_score_label.set(str(matchableImg.matching_results["Color"]))
 
             self.lightingscoreLabel= Label(self, textvariable = self.lighting_score_label)
-            self.lightingscoreLabel.grid(row = 10, column = 7, sticky = W)
+            self.lightingscoreLabel.grid(row = 10, column = 5, sticky = W)
             self.lighting_score_label.set(str(matchableImg.matching_results["Lighting"]))
 
             #Tim
             self.backgroundscoreLabel= Label(self, textvariable = self.background_score_label)
-            self.backgroundscoreLabel.grid(row = 11, column = 7, sticky = W)
+            self.backgroundscoreLabel.grid(row = 11, column = 5, sticky = W)
             self.background_score_label.set(str(matchableImg.matching_results["Background"]))
 
             self.dynamicrangeLabel= Label(self, textvariable = self.dynamicrange_score_label) 
-            self.dynamicrangeLabel.grid(row = 12, column = 7, sticky = W)
+            self.dynamicrangeLabel.grid(row = 12, column = 5, sticky = W)
             self.dynamicrange_score_label.set(str(matchableImg.matching_results["Dynamic Range"]))
 
             self.contrastLabel= Label(self, textvariable = self.contrast_score_label)
-            self.contrastLabel.grid(row = 13, column = 7, sticky = W)
+            self.contrastLabel.grid(row = 13, column = 5, sticky = W)
             self.contrast_score_label.set(str(matchableImg.matching_results["Contrast"]))
 
             #Tom
             self.geometryscoreLabel= Label(self, textvariable = self.geometry_score_label)
-            self.geometryscoreLabel.grid(row = 14, column = 7, sticky = W)
+            self.geometryscoreLabel.grid(row = 14, column = 5, sticky = W)
             self.geometry_score_label.set(str(matchableImg.matching_results["Geometry"]))
 
         self.update()
