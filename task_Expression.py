@@ -74,7 +74,7 @@ def checkExpression(imagelist):
 
 def _checkExpression(image, shape):
     #get image data
-    image_data = mpimg.imread(image.image_path + image.image_name)
+    #image_data = mpimg.imread(image.image_path + image.image_name)
 
     #shape[n][m]: n is the facial landmark from 0 to 67, m is the pixel-coordinate (0 = x-value, 1 = y-value)
     #description of n-values
@@ -114,12 +114,14 @@ def _checkExpression(image, shape):
     point44 = (int(shape[44][0]), int(shape[44][1]))
 
     #right mouth point
-    point48 = (int(shape[48][0]), int(shape[48][0]))
+    point48 = (int(shape[48][0]), int(shape[48][1]))
     #left mouth point
-    point54 = (int(shape[54][0]), int(shape[48][0]))
+    point54 = (int(shape[54][0]), int(shape[54][1]))
 
-
-    no_smile = True
+    if point48[1]==point54[1] or point48[1]+1==point54[1] or point48[1]+2==point54[1] or point48[1]-1==point54[1] or point48[1]-2==point54[1]:
+        no_smile = True
+    else:
+        no_smile = False
     no_raisingEyebrows = True
 
     #when all 3 characteristics are true, we have a neutral expression
@@ -139,7 +141,8 @@ def _checkExpression(image, shape):
     zahl4 = str(point66[1])
     zahl5 = str(point54[0])
     zahl6 = str(point54[1])
-    output_text = output_text+zahl1 +", "+zahl2 + " / " + zahl3 + ", " + zahl4 + "/" + zahl5 + ", " + zahl6
+    output_text = output_text +zahl1 +", "+zahl2 + " / " + zahl3 + ", " + zahl4 + "/" + zahl5 + ", " + zahl6
+    #"//" + str(between_lips) + "//" + str(lower_lip)
     return output_text
 
 #this function calculated the difference betwenn two points
