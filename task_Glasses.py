@@ -34,7 +34,7 @@ def _checkGlasses(image,shape):
     if glasses == False:
         output_text = "The person does not wear glasses"
     elif glasses == True and eyes_visibility == False:
-        output_text = "The person wear glasses, but the eyes are not visible"
+        output_text = "The person wear glasses and the eyes are not visible"
     elif glasses == True and eyes_visibility == True:
         output_text = "The person wear glasses and the eyes are visible"
 
