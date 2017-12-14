@@ -84,8 +84,10 @@ def _checkGeometry(image, shape):
     imageheight_B= int (len(image_data))
     horizontaldistance_Mh= int((leftEyeCenter[0] + rightEyeCenter[0]) / 2)
     verticaldistance_Mv= int((leftEyeCenter[1] + rightEyeCenter[1]) / 2)
-    headwidth_W= int(shape[16][0]-shape[0][0])
-    headlength_L= 2*(shape[8][1] - M[1])
+    #headwidth_W= int(shape[16][0]-shape[0][0])
+    headwidth_W=int(math.sqrt(((shape[16][0]-shape[0][0])**2)+((shape[16][1]-shape[0][1])**2)))
+    #headlength_L= 2*(shape[8][1] - M[1])
+    headlength_L=int(2*math.sqrt(((shape[8][0]-M[0])**2)+((shape[8][1]-M[1])**2)))
 
     image_l=imageheight_B
     image_w=imagewidth_A
