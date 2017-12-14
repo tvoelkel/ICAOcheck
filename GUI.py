@@ -128,7 +128,7 @@ class myUI(Frame, metaclass=Singleton):
         #    checkBackground(self.file_list)
         #    checkDynamicRange(self.file_list)
         #    checkContast(self.file_list)
-            checkGeometry(self.file_list,Check_Cut)
+        #    checkGeometry(self.file_list,Check_Cut)
 
             self.display_result(self.file_list[self.currentDisplayedResult-1])
         #ToDo
@@ -209,39 +209,39 @@ class myUI(Frame, metaclass=Singleton):
 
             #score
             #Patrick
-            self.expressionscoreLabel= Label(self, textvariable = self.expression_score_label)
-            self.expressionscoreLabel.grid(row = 7, column = 5, sticky = W)
+            self.expressionscoreLabel= Label(self, textvariable = self.expression_score_label, justify=LEFT)
+            self.expressionscoreLabel.grid(row = 7, column = 6, sticky = W)
             self.expression_score_label.set(str(matchableImg.matching_results["Expression"]))
 
-            self.glassesscoreLabel= Label(self, textvariable = self.glasses_score_label)
-            self.glassesscoreLabel.grid(row = 8, column = 5, sticky = W)
+            self.glassesscoreLabel= Label(self, textvariable = self.glasses_score_label, justify=LEFT)
+            self.glassesscoreLabel.grid(row = 8, column = 6, sticky = W)
             self.glasses_score_label.set(str(matchableImg.matching_results["Glasses"]))
 
             #Tobias
-            self.colorscoreLabel= Label(self, textvariable = self.color_score_label)
-            self.colorscoreLabel.grid(row = 9, column = 5, sticky = W)
+            self.colorscoreLabel= Label(self, textvariable = self.color_score_label, justify=LEFT)
+            self.colorscoreLabel.grid(row = 9, column = 6, sticky = W)
             self.color_score_label.set(str(matchableImg.matching_results["Color"]))
 
-            self.lightingscoreLabel= Label(self, textvariable = self.lighting_score_label)
-            self.lightingscoreLabel.grid(row = 10, column = 5, sticky = W)
+            self.lightingscoreLabel= Label(self, textvariable = self.lighting_score_label, justify=LEFT)
+            self.lightingscoreLabel.grid(row = 10, column = 6, sticky = W)
             self.lighting_score_label.set(str(matchableImg.matching_results["Lighting"]))
 
             #Tim
-            self.backgroundscoreLabel= Label(self, textvariable = self.background_score_label)
-            self.backgroundscoreLabel.grid(row = 11, column = 5, sticky = W)
+            self.backgroundscoreLabel= Label(self, textvariable = self.background_score_label, justify=LEFT)
+            self.backgroundscoreLabel.grid(row = 11, column = 6, sticky = W)
             self.background_score_label.set(str(matchableImg.matching_results["Background"]))
 
-            self.dynamicrangeLabel= Label(self, textvariable = self.dynamicrange_score_label) 
-            self.dynamicrangeLabel.grid(row = 12, column = 5, sticky = W)
+            self.dynamicrangeLabel= Label(self, textvariable = self.dynamicrange_score_label, justify=LEFT) 
+            self.dynamicrangeLabel.grid(row = 12, column = 6, sticky = W)
             self.dynamicrange_score_label.set(str(matchableImg.matching_results["Dynamic Range"]))
 
-            self.contrastLabel= Label(self, textvariable = self.contrast_score_label)
-            self.contrastLabel.grid(row = 13, column = 5, sticky = W)
+            self.contrastLabel= Label(self, textvariable = self.contrast_score_label, justify=LEFT)
+            self.contrastLabel.grid(row = 13, column = 6, sticky = W)
             self.contrast_score_label.set(str(matchableImg.matching_results["Contrast"]))
 
             #Tom
-            self.geometryscoreLabel= Label(self, textvariable = self.geometry_score_label)
-            self.geometryscoreLabel.grid(row = 14, column = 5, sticky = W)
+            self.geometryscoreLabel= Label(self, textvariable = self.geometry_score_label, justify=LEFT)
+            self.geometryscoreLabel.grid(row = 14, column = 6, sticky = W )
             self.geometry_score_label.set(str(matchableImg.matching_results["Geometry"]))
 
         self.update()
