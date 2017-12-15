@@ -105,19 +105,19 @@ def _checkExpression(image, shape):
     #height betwenn point 8 and point 24
     height_8_24 = point8[1]-point24[1]
     #get value of point 62 in relation to the height between 8 and 24
-    relPoint62 = height_8_24/point62[1]
+    #relPoint62 = height_8_24/point62[1]
     #get value of point 66 in relation to the height between 8 and 24
-    relPoint66 = height_8_24/point66[1]
-
-    relHeight_62_66 = relPoint66 - relPoint62
-
+    #relPoint66 = height_8_24/point66[1]
+    height62_66 = point66[1]-point62[1]
+    #relHeight_62_66 = relPoint66 - relPoint62
+    mouthopenfeature = height62_66/height_8_24
     #check whether the mouth is closed via definition
     if 2*between_lips<=lower_lip:
         #if its true, check with another definition
-        if relHeight_62_66 >= -0.017 and relHeight_62_66 <= 0.017:
-            close_mouth = True
-        else:
-            close_mouth = False
+        #if Height_62_66 >= -0.017 and relHeight_62_66 <= 0.017:
+        close_mouth = True
+        #else:
+        #    close_mouth = False
     else:
         close_mouth = False
 
@@ -158,10 +158,10 @@ def _checkExpression(image, shape):
     zahl4 = str(point66[1])
     zahl5 = str(point54[0])
     zahl6 = str(point54[1])
-    zahl7 = str(relPoint62)
-    zahl8 = str(relPoint66)
-    zahl9 = str(relPoint66 - relPoint62)
-    #output_text = output_text + zahl9#zahl7 + "/" +zahl8#+ zahl1 +", "+zahl2 + " / " + zahl3 + ", " + zahl4 + "/" + zahl5 + ", " + zahl6
+    #zahl7 = str(relPoint62)
+    #zahl8 = str(relPoint66)
+    zahl9 = str(mouthopenfeature)
+    output_text = output_text + zahl9 #zahl7 + "/" +zahl8#+ zahl1 +", "+zahl2 + " / " + zahl3 + ", " + zahl4 + "/" + zahl5 + ", " + zahl6
     #"//" + str(between_lips) + "//" + str(lower_lip)
     return output_text
 
