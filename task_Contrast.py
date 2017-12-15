@@ -10,6 +10,8 @@ from skimage import io
 from skimage import color
 from scipy import misc
 
+from math import sqrt
+
 def rgb2gray(rgb):
     return numpy.dot(rgb[...,:3], [0.299, 0.587, 0.114])
 
@@ -42,11 +44,11 @@ def checkContrast(imagelist):
         
         #load image data
         
-        image_data = mpimg.imread(image.image_path + image.image_name)
+        image_data = io.imread(image.image_path + image.image_name)
         image_data_grey = rgb2gray(image_data)
 
-        #plt.imshow(image_data, cmap = plt.get_cmap('gray'))
         
+
         contrast_local = 0.0
 
         # counter i and element x
@@ -63,7 +65,16 @@ def checkContrast(imagelist):
 
         #print("asd %.100f" % (1 / len(image_data)*len(image_data[0])))
 
+        mean_deviation = sqrt(numpy.var(numpy.asarray(image_data_grey)))
+
+
+        plt.hist(numpy.asarray(image_data_grey), bins=256)  # arguments are passed to np.histogram
+        plt.title("Histogram %s" % image.image_name)
+        plt.show()
+
+        print("Processing file: {}".format(image.image_path + image.image_name))
         print("Contrast Local: %.2f %s" % (contrast_local,image.image_name))
         print("Contrast Global: %.2f %s" % (contrast_global,image.image_name))
+        print(mean_deviation)
 
         image.matching_results["Contrast"] = "Ergebnis Contrast"
