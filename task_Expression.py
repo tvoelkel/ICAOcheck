@@ -104,20 +104,17 @@ def _checkExpression(image, shape):
     point24 = (int(shape[24][0]), int(shape[24][1]))
     #height betwenn point 8 and point 24
     height_8_24 = point8[1]-point24[1]
-    #get value of point 62 in relation to the height between 8 and 24
-    #relPoint62 = height_8_24/point62[1]
-    #get value of point 66 in relation to the height between 8 and 24
-    #relPoint66 = height_8_24/point66[1]
+    #height between point 62 and point 66
     height62_66 = point66[1]-point62[1]
-    #relHeight_62_66 = relPoint66 - relPoint62
-    mouthopenfeature = height62_66/height_8_24
+    #set the height62_66 in relation
+    mouthOpenFeature = height62_66/height_8_24
     #check whether the mouth is closed via definition
     if 2*between_lips<=lower_lip:
         #if its true, check with another definition
-        #if Height_62_66 >= -0.017 and relHeight_62_66 <= 0.017:
-        close_mouth = True
-        #else:
-        #    close_mouth = False
+        if mouthOpenFeature<= 0.017:
+            close_mouth = True
+        else:
+            close_mouth = False
     else:
         close_mouth = False
 
@@ -135,11 +132,69 @@ def _checkExpression(image, shape):
     #left mouth point
     point54 = (int(shape[54][0]), int(shape[54][1]))
 
-    #if point48[1]==point54[1] or point48[1]+1==point54[1] or point48[1]+2==point54[1] or point48[1]-1==point54[1] or point48[1]-2==point54[1]:
-    no_smile = True
-    #else:
-    #    no_smile = False
-    no_raisingEyebrows = True
+    #height difference between the right and the left mouth point
+    height48_54 = point54[1] - point48[1]
+    #set this height in relation
+    noSmileFeature = abs(height48_54/height_8_24)
+    #height between the right and the middle (upper part) point
+    height48_62 = point62[1]-point48[1]
+    #set this height in relation
+    noSmileFeatureRight = abs(height48_62/height_8_24)
+    #height between the left and the middle (upper part) point
+    height54_62 = point62[1]-point54[1]
+    #set this height in relation
+    noSmileFeatureLeft = abs(height54_62/height_8_24)
+    if noSmileFeature <= 0.015:
+        if noSmileFeatureRight <=0.017 and noSmileFeatureLeft <=0.017:
+            no_smile = True
+        else:
+            no_smile = False
+    else:
+        no_smile = False
+
+    #get all landmarks of the right eyebrow (from right to left)
+    point17 = (int(shape[17][0]), int(shape[17][1]))
+    point18 = (int(shape[18][0]), int(shape[18][1]))
+    point19 = (int(shape[19][0]), int(shape[19][1]))
+    point20 = (int(shape[20][0]), int(shape[20][1]))
+    point21 = (int(shape[21][0]), int(shape[21][1]))
+    #get all landmarks of the right eyebrow (from right to left)
+    point22 = (int(shape[22][0]), int(shape[22][1]))
+    point23 = (int(shape[23][0]), int(shape[23][1]))
+    point24 = (int(shape[24][0]), int(shape[24][1]))
+    point25 = (int(shape[25][0]), int(shape[25][1]))
+    point26 = (int(shape[26][0]), int(shape[26][1]))
+
+    #height difference between point 17 and point 18
+    height17_18 = abs(point17[1]-point18[1])
+    #height difference between point 18 and point 19
+    height18_19 = abs(point18[1]-point19[1])
+    #height difference between point 19 and point 20
+    height19_20 = abs(point19[1]-point20[1])
+    #height difference between point 20 and point 21
+    height20_21 = abs(point20[1]-point21[1])
+    #get the average between the height difference (right eyebrow)
+    averageEyebrowRight = (height17_18+height18_19+height19_20+height20_21)/4
+    #set the average in relation
+    raisingEyebrowFeatureRight = averageEyebrowRight/height_8_24
+
+    #height difference between point 22 and point 23
+    height22_23 = abs(point22[1]-point23[1])
+    #height difference between point 23 and point 24
+    height23_24 = abs(point23[1]-point24[1])
+    #height difference between point 24 and point 25
+    height24_25 = abs(point24[1]-point25[1])
+    #height difference between point 25 and point 26
+    height25_26 = abs(point25[1]-point26[1])
+    #get the average between the height difference
+    averageEyebrowLeft = (height22_23+height23_24+height24_25+height25_26)/4
+    #set the average in relation
+    raisingEyebrowFeatureLeft = averageEyebrowLeft/height_8_24
+
+    if raisingEyebrowFeatureRight <= 0.032 and raisingEyebrowFeatureLeft <= 0.032:
+        no_raisingEyebrows = True
+    else:
+        no_raisingEyebrows = False
 
     #when all 3 characteristics are true, we have a neutral expression
     if close_mouth == True and no_smile == True and no_raisingEyebrows == True:
@@ -150,18 +205,22 @@ def _checkExpression(image, shape):
     elif no_raisingEyebrows == False:
         output_text = "No neutral expression, because the eyebrows are raised"
     elif no_smile == False:
-        output_text ="No neutral expression, because the person smile (no 100 percent security)"
+        output_text ="No neutral expression, because the person smile or look not normal"
 
-    zahl1 = str(point48[0])
-    zahl2 = str(point48[1])
-    zahl3 = str(point66[0])
-    zahl4 = str(point66[1])
-    zahl5 = str(point54[0])
-    zahl6 = str(point54[1])
+    #zahl1 = str(point48[0])
+    #zahl2 = str(point48[1])
+    #zahl3 = str(point66[0])
+    #zahl4 = str(point66[1])
+    #zahl5 = str(point54[0])
+    #zahl6 = str(point54[1])
     #zahl7 = str(relPoint62)
     #zahl8 = str(relPoint66)
-    zahl9 = str(mouthopenfeature)
-    output_text = output_text + zahl9 #zahl7 + "/" +zahl8#+ zahl1 +", "+zahl2 + " / " + zahl3 + ", " + zahl4 + "/" + zahl5 + ", " + zahl6
+    #zahl9 = str(mouthOpenFeature)
+    #zahl10 = str(noSmileFeatureRight)
+    #zahl11 = str(noSmileFeatureLeft)
+    #zahl12 = str(raisingEyebrowFeatureRight)
+    #zahl13 = str(raisingEyebrowFeatureLeft)
+    #output_text = output_text + zahl12 + "/" + zahl13#zahl7 + "/" +zahl8#+ zahl1 +", "+zahl2 + " / " + zahl3 + ", " + zahl4 + "/" + zahl5 + ", " + zahl6
     #"//" + str(between_lips) + "//" + str(lower_lip)
     return output_text
 
