@@ -9,8 +9,6 @@ from task_FacialLandmarks import plotFacialLandmarks
 from task_Expression import checkExpression
 from task_Glasses import checkGlasses
 
-from task_Color import checkColor
-
 from task_Background import checkBackground
 from task_Dynamicrange import checkDynamicRange
 from task_Contrast import checkContrast
@@ -132,14 +130,13 @@ class myUI(Frame, metaclass=Singleton):
 
         #    checkExpression(self.file_list)
         #    checkGlasses(self.file_list)
-        #    checkColor(self.file_list)
-        #    checkLighting(self.file_list)
+        #    checkLighting(self.file_list)  #also includes color check
         #    checkBackground(self.file_list)
         #    checkDynamicRange(self.file_list)
         #    checkContast(self.file_list)
         #    checkGeometry(self.file_list,Check_Cut)
         #    if plot_landmarks==1:
-        #        plotFacialLandmarks(self.file_list)
+        #    plotFacialLandmarks(self.file_list)
 
             self.display_result(self.file_list[self.currentDisplayedResult-1])
         #ToDo
