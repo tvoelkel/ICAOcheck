@@ -38,9 +38,6 @@ def computeImage(image, shape):
     H = np.array([leftEyeCenter[0] - rightEyeCenter[0], leftEyeCenter[1] - rightEyeCenter[1]])
     IED = np.linalg.norm(H)
 
-    if IED < 90:
-        return "Failed: Inner eye distance smaller than 90px."
-
     V = np.array([mouthCenter[0] - M[0], mouthCenter[1] - M[1]])
     EM = np.linalg.norm(V)
     MP = 0.3 * IED
@@ -52,6 +49,10 @@ def computeImage(image, shape):
     chinMeasureRect = (int(M[0] + 1.5 * V[0] - MP/2), int(M[1] + 1.5 * V[1] - MP/2), iMP, iMP)
     rightCheekMeasureRect = (int(cheekLevelSpot[0] - 0.5 * H[0] - MP), int(cheekLevelSpot[1] - 0.5 * H[1]), iMP, iMP)
     leftCheekMeasureRect = (int(cheekLevelSpot[0] + 0.5 * H[0]), int(cheekLevelSpot[1] + 0.5 * H[1]), iMP, iMP)
+
+    colorCheck(image, (rightCheekMeasureRect, leftCheekMeasureRect, chinMeasureRect, foreheadMeasureRect))
+    if IED < 90:
+        return "Failed: Inner eye distance smaller than 90px."
 
     #get Intensity values for specific channels of all regions
     blueValues, greenValues, redValues, blueLN, greenLN, redLN = intensityCheck(image, (rightCheekMeasureRect, leftCheekMeasureRect, chinMeasureRect, foreheadMeasureRect))
@@ -90,11 +91,6 @@ def intensityCheck(image, rectangles):
         #print(np.count_nonzero(edges))
         #cv2.imshow(str(i), cropGray)
 
-        #check if the CIELAB color values are appropriate
-        cielab_a_mean, cielab_b_mean = colorCheck(crop)
-        cielab_a.append(cielab_a_mean)
-        cielab_b.append(cielab_b_mean)
-
         blueVals.append(np.mean(crop[:,:,0]))
         greenVals.append(np.mean(crop[:,:,1]))
         redVals.append(np.mean(crop[:,:,2]))
@@ -118,6 +114,28 @@ def intensityCheck(image, rectangles):
     #interpret skin values
     #because opencv maps l*a*b* values to 0-255 we have to reconvert them to their normal -127 <= x <= 127 range
     #in this range a should lay between 5-35 and b between 5-35 for a natural skin tone
+
+    return blueVals, greenVals, redVals, blueValsLowNoise, greenValsLowNoise, redValsLowNoise
+
+def colorCheck(image, rectangles):
+    cielab_a = []
+    cielab_b = []
+
+    img = cv2.imread(image.image_path + image.image_name)
+    debugDisplayImage = img
+
+    for i in range(0, 4):
+        (x, y, w, h) = rectangles[i]
+        crop = img[y:y + h, x:x + w]
+        lab_crop = cv2.cvtColor(crop, cv2.COLOR_BGR2LAB)
+        l_channel, a_channel, b_channel = cv2.split(lab_crop)
+
+        cielab_a.append(np.mean(a_channel))
+        cielab_b.append(np.mean(b_channel))
+
+    #interpret skin tone values
+    #because opencv maps l*a*b* values to 0-255 we have to reconvert them to their normal -127 <= x <= 127 range
+    #in this range a should lay between 5-35 and b between 5-35 for a natural skin tone
     cielab_a_all_mean = np.mean(cielab_a) - 128
     cielab_b_all_mean = np.mean(cielab_b) - 128
 
@@ -125,12 +143,3 @@ def intensityCheck(image, rectangles):
         image.matching_results["Color"] = "Passed."
     else:
         image.matching_results["Color"] = "Unnatural skin tone. CIELAB a* = " + str(round(cielab_a_all_mean, 2)) + ", b* = " + str(round(cielab_b_all_mean, 2)) + "."
-
-
-    return blueVals, greenVals, redVals, blueValsLowNoise, greenValsLowNoise, redValsLowNoise
-
-def colorCheck(crop):
-    lab_crop = cv2.cvtColor(crop, cv2.COLOR_BGR2LAB)
-    l_channel, a_channel, b_channel = cv2.split(lab_crop)
-
-    return np.mean(a_channel), np.mean(b_channel)
