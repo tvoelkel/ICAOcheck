@@ -63,8 +63,10 @@ def computeImage(image, shape):
     else:
         return "Failed: Light intensity difference too high."
 
-
 def intensityCheck(image, rectangles):
+    cielab_a = []
+    cielab_b = []
+
     cropList = []
     redVals = []
     blueVals = []
@@ -81,11 +83,17 @@ def intensityCheck(image, rectangles):
         (x, y, w, h) = rectangles[i]
         crop = img[y:y + h, x:x + w]
         cropGray = cv2.cvtColor(crop, cv2.COLOR_BGR2GRAY)
+
         #apply Canny Edge detector
         edges = cv2.Canny(cropGray, 50, 200)
 
         #print(np.count_nonzero(edges))
         #cv2.imshow(str(i), cropGray)
+
+        #check if the CIELAB color values are appropriate
+        cielab_a_mean, cielab_b_mean = colorCheck(crop)
+        cielab_a.append(cielab_a_mean)
+        cielab_b.append(cielab_b_mean)
 
         blueVals.append(np.mean(crop[:,:,0]))
         greenVals.append(np.mean(crop[:,:,1]))
@@ -106,4 +114,23 @@ def intensityCheck(image, rectangles):
 
     #debugging
     #cv2.imshow(str(image), debugDisplayImage)
+
+    #interpret skin values
+    #because opencv maps l*a*b* values to 0-255 we have to reconvert them to their normal -127 <= x <= 127 range
+    #in this range a should lay between 5-35 and b between 5-35 for a natural skin tone
+    cielab_a_all_mean = np.mean(cielab_a) - 128
+    cielab_b_all_mean = np.mean(cielab_b) - 128
+
+    if cielab_a_all_mean >= 5 and cielab_a_all_mean <=35 and cielab_b_all_mean >= 5 and cielab_a_all_mean <= 35:
+        image.matching_results["Color"] = "Passed."
+    else:
+        image.matching_results["Color"] = "Unnatural skin tone. CIELAB a* = " + str(round(cielab_a_all_mean, 2)) + ", b* = " + str(round(cielab_b_all_mean, 2)) + "."
+
+
     return blueVals, greenVals, redVals, blueValsLowNoise, greenValsLowNoise, redValsLowNoise
+
+def colorCheck(crop):
+    lab_crop = cv2.cvtColor(crop, cv2.COLOR_BGR2LAB)
+    l_channel, a_channel, b_channel = cv2.split(lab_crop)
+
+    return np.mean(a_channel), np.mean(b_channel)
