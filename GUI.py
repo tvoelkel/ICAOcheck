@@ -5,10 +5,9 @@ from matchableImage import MatchableImage
 from helperFunctions import getFacialLandmarks
 from PIL import Image, ImageTk
 
+from task_FacialLandmarks import plotFacialLandmarks
 from task_Expression import checkExpression
 from task_Glasses import checkGlasses
-
-from task_Color import checkColor
 
 from task_Background import checkBackground
 from task_Dynamicrange import checkDynamicRange
@@ -24,6 +23,7 @@ import dlib
 import numpy as np
 
 Check_Cut=False
+plot_landmarks=False
 
 class Singleton(type):
     _instances = {}
@@ -33,11 +33,12 @@ class Singleton(type):
         return cls._instances[cls]
 
 class myUI(Frame, metaclass=Singleton):
-    
+
     def __init__(self):
         Frame.__init__(self)
         #variables
         Check_Cut = IntVar()
+        plot_landmarks = IntVar()
 
         self.filepath_label = StringVar()
         self.score_label = StringVar()
@@ -87,11 +88,16 @@ class myUI(Frame, metaclass=Singleton):
         self.checkButton.grid(row=3, column=1, sticky=W)
         self.checkBox=Checkbutton(self,text="wenn möglich nach ICAO-Standard zuschneiden", command=self.check_cut)
         self.checkBox.grid(row=3, column=2,columnspan=3, sticky=W)
-
+        self.checkBox=Checkbutton(self,text="Facial Landmarks der Bilder anzeigen", command=self.plot_landmarks)
+        self.checkBox.grid(row=4, column=2,columnspan=3, sticky=W)
 
     def check_cut (self):
         global Check_Cut
         Check_Cut= not Check_Cut
+
+    def plot_landmarks(self):
+        global plot_landmarks
+        plot_landmarks = not plot_landmarks
 
     def load_files(self):
         #load all files in the same directory as the selected file
@@ -111,24 +117,26 @@ class myUI(Frame, metaclass=Singleton):
 
     def check_images(self):
         global Check_Cut
+        global plot_landmarks
 
         if(self.file_list != []):
             detector = dlib.get_frontal_face_detector()
             #load dlib pre-trained predictor
             predictor = dlib.shape_predictor(os.path.realpath(__file__).replace('\\', '/').rsplit('/',1)[0]+'/'+"shape_predictor_68_face_landmarks.dat")
-            
+
             for image in self.file_list:
                 #run helper function to set the facial landmark array for each image and set a flag whether the number of faces != 1
                 (image.facial_landmarks, image.facial_landmarks_error) = getFacialLandmarks(image,detector,predictor)
 
         #    checkExpression(self.file_list)
         #    checkGlasses(self.file_list)
-        #    checkColor(self.file_list)
-        #    checkLighting(self.file_list)
+        #    checkLighting(self.file_list)  #also includes color check
         #    checkBackground(self.file_list)
         #    checkDynamicRange(self.file_list)
         #    checkContast(self.file_list)
         #    checkGeometry(self.file_list,Check_Cut)
+        #    if plot_landmarks==1:
+        #    plotFacialLandmarks(self.file_list)
 
             self.display_result(self.file_list[self.currentDisplayedResult-1])
         #ToDo
@@ -193,7 +201,7 @@ class myUI(Frame, metaclass=Singleton):
             self.backgroundtypeLabel= Label(self, textvariable = self.background_type_label)
             self.backgroundtypeLabel.grid(row = 11, column = 4, sticky = W)
             self.background_type_label.set(str("Background:"))
-        
+
             self.dynamicrangetypeLabel= Label(self, textvariable = self.dynamicrange_type_label)
             self.dynamicrangetypeLabel.grid(row = 12, column = 4, sticky = W)
             self.dynamicrange_type_label.set(str("Dynamic Range:"))
@@ -231,7 +239,7 @@ class myUI(Frame, metaclass=Singleton):
             self.backgroundscoreLabel.grid(row = 11, column = 6, sticky = W)
             self.background_score_label.set(str(matchableImg.matching_results["Background"]))
 
-            self.dynamicrangeLabel= Label(self, textvariable = self.dynamicrange_score_label, justify=LEFT) 
+            self.dynamicrangeLabel= Label(self, textvariable = self.dynamicrange_score_label, justify=LEFT)
             self.dynamicrangeLabel.grid(row = 12, column = 6, sticky = W)
             self.dynamicrange_score_label.set(str(matchableImg.matching_results["Dynamic Range"]))
 

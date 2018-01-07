@@ -74,7 +74,7 @@ def checkExpression(imagelist):
 
 def _checkExpression(image, shape):
     #get image data
-    #image_data = mpimg.imread(image.image_path + image.image_name)
+    #image_data = cv2.imread(image.image_path + image.image_name)
 
     #shape[n][m]: n is the facial landmark from 0 to 67, m is the pixel-coordinate (0 = x-value, 1 = y-value)
     #description of n-values
@@ -111,7 +111,7 @@ def _checkExpression(image, shape):
     #check whether the mouth is closed via definition
     if 2*between_lips<=lower_lip:
         #if its true, check with another definition
-        if mouthOpenFeature<= 0.017:
+        if mouthOpenFeature<= 0.043:
             close_mouth = True
         else:
             close_mouth = False
@@ -191,7 +191,7 @@ def _checkExpression(image, shape):
     #set the average in relation
     raisingEyebrowFeatureLeft = averageEyebrowLeft/height_8_24
 
-    if raisingEyebrowFeatureRight <= 0.032 and raisingEyebrowFeatureLeft <= 0.032:
+    if raisingEyebrowFeatureRight <= 0.035 and raisingEyebrowFeatureLeft <= 0.035:
         no_raisingEyebrows = True
     else:
         no_raisingEyebrows = False
@@ -203,9 +203,9 @@ def _checkExpression(image, shape):
     elif close_mouth == False:
         output_text = "No neutral expression, because the mouth is open"
     elif no_raisingEyebrows == False:
-        output_text = "No neutral expression, because the eyebrows are raised"
+        output_text = "No neutral expression, because the eyebrows are not correct"
     elif no_smile == False:
-        output_text ="No neutral expression, because the person smile or look not normal"
+        output_text ="No neutral expression"
 
     #zahl1 = str(point48[0])
     #zahl2 = str(point48[1])
@@ -220,7 +220,9 @@ def _checkExpression(image, shape):
     #zahl11 = str(noSmileFeatureLeft)
     #zahl12 = str(raisingEyebrowFeatureRight)
     #zahl13 = str(raisingEyebrowFeatureLeft)
-    #output_text = output_text + zahl12 + "/" + zahl13#zahl7 + "/" +zahl8#+ zahl1 +", "+zahl2 + " / " + zahl3 + ", " + zahl4 + "/" + zahl5 + ", " + zahl6
+    #zahl14 = str(mouthOpenFeature)
+    #output_text = output_text + zahl10 + "/" + zahl11#+ zahl14
+    #+ zahl12 + "/" + zahl13#zahl7 + "/" +zahl8#+ zahl1 +", "+zahl2 + " / " + zahl3 + ", " + zahl4 + "/" + zahl5 + ", " + zahl6
     #"//" + str(between_lips) + "//" + str(lower_lip)
     return output_text
 
