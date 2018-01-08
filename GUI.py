@@ -136,7 +136,7 @@ class myUI(Frame, metaclass=Singleton):
         #    checkBackground(self.file_list)
         #    checkDynamicRange(self.file_list)
         #    checkContast(self.file_list)
-            checkGeometry(self.file_list,Check_Cut)
+        #    checkGeometry(self.file_list,Check_Cut)
         #    if plot_landmarks==1:
         #        plotFacialLandmarks(self.file_list)
 
