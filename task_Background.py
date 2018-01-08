@@ -210,8 +210,8 @@ def _checkBackground(image):
     image_floodfill = numpy.array_split(image_floodfill,2,axis=1)
     image_floodfill = numpy.concatenate((image_floodfill[1],image_floodfill[0]), axis=1)
     
-    cv2.namedWindow(image.image_name, cv2.WINDOW_NORMAL)
-    cv2.imshow(image.image_name, image_floodfill)        
+    #cv2.namedWindow(image.image_name, cv2.WINDOW_NORMAL)
+    #cv2.imshow(image.image_name, image_floodfill)        
 
 
     image_floodfill  = image_floodfill.astype('float32') / 255.0        
@@ -232,8 +232,37 @@ def _checkBackground(image):
     print("percentage {}".format(nonzeros/image_gray.size))
 
 
-    #TODO: checken wie viele pixel einen unterschied zu einem 10x10 median feld vom hintergrund haben 
+    #from 5% left corner
+    background_mean = int(numpy.mean(image_gray[0:int(image_gray.shape[1]*0.05), 0:int(image_gray.shape[1]*0.05)]))
+    background_mask = mask.copy()
+    background_mask [mask == 0.0] = 255
+    background_mask [mask == 255.0] = 0
+    foreground_count = numpy.count_nonzero(background_mask)
+    background_mask = background_mask.astype('float32') / 255.0
 
+    background_meandeviation = ((background_mean-40 <= image_gray) & (image_gray <= background_mean+40))
+    background_meandeviation[background_meandeviation==True] = 255 
+    background_meandeviation[background_meandeviation==False] = 0
+    background_meandeviation.astype('float32') / 255.0
+    background_meandeviation = ((background_meandeviation*background_mask)*255).astype('uint8')
+
+
+    background_meandeviation_count = numpy.count_nonzero(background_meandeviation) 
+    background_inconform_pixels = foreground_count - background_meandeviation_count
+    background_inconform_pixels_percentage = background_inconform_pixels / image_gray.size
+
+    cv2.namedWindow('background_mask', cv2.WINDOW_NORMAL)
+    cv2.imshow('background_mask', background_mask)
+    cv2.namedWindow('background_meandeviation', cv2.WINDOW_NORMAL)
+    cv2.imshow('background_meandeviation', background_meandeviation)  
+    
+
+    
+    print("background_meandeviation_count            {}".format(background_meandeviation_count))
+    print("foreground_count                          {}".format(foreground_count))
+    print("background_inconform_pixels               {}".format(background_inconform_pixels))
+    print("background_inconform_pixels_percentage    {}".format(background_inconform_pixels_percentage))
+    
 
     #cv2.imshow("test",image_filter)
     #cv2.waitKey(0)
