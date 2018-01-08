@@ -233,32 +233,32 @@ def _checkBackground(image):
 
 
     #from 5% left corner
-    background_mean = int(numpy.mean(image_gray[0:int(image_gray.shape[1]*0.05), 0:int(image_gray.shape[1]*0.05)]))
+    background_average = int(numpy.average(image_gray[0:int(image_gray.shape[1]*0.05), 0:int(image_gray.shape[1]*0.05)]))
     background_mask = mask.copy()
     background_mask [mask == 0.0] = 255
     background_mask [mask == 255.0] = 0
     foreground_count = numpy.count_nonzero(background_mask)
     background_mask = background_mask.astype('float32') / 255.0
 
-    background_meandeviation = ((background_mean-40 <= image_gray) & (image_gray <= background_mean+40))
-    background_meandeviation[background_meandeviation==True] = 255 
-    background_meandeviation[background_meandeviation==False] = 0
-    background_meandeviation.astype('float32') / 255.0
-    background_meandeviation = ((background_meandeviation*background_mask)*255).astype('uint8')
+    background_averagedeviation = ((background_average-40 <= image_gray) & (image_gray <= background_average+40))
+    background_averagedeviation[background_averagedeviation==True] = 255 
+    background_averagedeviation[background_averagedeviation==False] = 0
+    background_averagedeviation.astype('float32') / 255.0
+    background_averagedeviation = ((background_averagedeviation*background_mask)*255).astype('uint8')
 
 
-    background_meandeviation_count = numpy.count_nonzero(background_meandeviation) 
-    background_inconform_pixels = foreground_count - background_meandeviation_count
+    background_averagedeviation_count = numpy.count_nonzero(background_averagedeviation) 
+    background_inconform_pixels = foreground_count - background_averagedeviation_count
     background_inconform_pixels_percentage = background_inconform_pixels / image_gray.size
 
     cv2.namedWindow('background_mask', cv2.WINDOW_NORMAL)
     cv2.imshow('background_mask', background_mask)
-    cv2.namedWindow('background_meandeviation', cv2.WINDOW_NORMAL)
-    cv2.imshow('background_meandeviation', background_meandeviation)  
+    cv2.namedWindow('background_averagedeviation', cv2.WINDOW_NORMAL)
+    cv2.imshow('background_averagedeviation', background_averagedeviation)  
     
 
     
-    print("background_meandeviation_count            {}".format(background_meandeviation_count))
+    print("background_averagedeviation_count            {}".format(background_averagedeviation_count))
     print("foreground_count                          {}".format(foreground_count))
     print("background_inconform_pixels               {}".format(background_inconform_pixels))
     print("background_inconform_pixels_percentage    {}".format(background_inconform_pixels_percentage))
