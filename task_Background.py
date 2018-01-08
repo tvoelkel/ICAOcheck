@@ -21,7 +21,7 @@ def checkBackground(imagelist):
     for image in imagelist:
 
        image.matching_results["Background"]=_checkBackground(image)
-
+    
 
 def _checkBackground(image):
 
@@ -137,8 +137,8 @@ def _checkBackground(image):
     image_filter = cv2.dilate(image_filter, None,iterations=10)
     image_filter = cv2.erode(image_filter, None,iterations=10)
 
-    cv2.namedWindow('image1', cv2.WINDOW_NORMAL)
-    cv2.imshow('image1', image_filter)      
+    #cv2.namedWindow('image1', cv2.WINDOW_NORMAL)
+    #cv2.imshow('image1', image_filter)      
 
 
     contour_info = []
@@ -176,8 +176,8 @@ def _checkBackground(image):
    
     
 
-    cv2.namedWindow('image2', cv2.WINDOW_NORMAL)
-    cv2.imshow('image2', masked)             
+    #cv2.namedWindow('image2', cv2.WINDOW_NORMAL)
+    #cv2.imshow('image2', masked)             
 
     
     hist = numpy.histogram(masked,range(1, 256),density=True)
@@ -190,11 +190,10 @@ def _checkBackground(image):
     print(entropy)
 
     h, w = image_gray.shape[:2]
-    mask_flood = numpy.zeros((h+2, w+2), numpy.uint8)
-
-
-    #mask_flood [(mask == 0) + 1 ] = 255
-
+    #mask_flood = numpy.zeros((h+2, w+2), numpy.uint8)
+    mask_flood = numpy.pad(mask,1,mode="constant").astype('uint8') 
+    mask_flood = numpy.array_split(mask_flood,2,axis=1)
+    mask_flood = numpy.concatenate((mask_flood[1],mask_flood[0]), axis=1)
 
     #image_gray_split = numpy.hsplit(cv2.bilateralFilter(image_gray,9,5,5),2)
     image_gray_split = numpy.array_split(image_gray,2,axis=1)
@@ -204,13 +203,15 @@ def _checkBackground(image):
     
     image_floodfill = image_gray_split.copy()
     # Floodfill from point (0, 0)
-    cv2.floodFill(image_floodfill, mask_flood, (int(w/2),0), 0, loDiff=10,upDiff=10, flags=cv2.FLOODFILL_FIXED_RANGE )
-
+    cv2.floodFill(image_floodfill, mask_flood, (int(w/2),0), 0, loDiff=1,upDiff=1 )
+    
+     
+    
     image_floodfill = numpy.array_split(image_floodfill,2,axis=1)
     image_floodfill = numpy.concatenate((image_floodfill[1],image_floodfill[0]), axis=1)
     
-    cv2.namedWindow('image3', cv2.WINDOW_NORMAL)
-    cv2.imshow('image3', image_floodfill)          
+    cv2.namedWindow(image.image_name, cv2.WINDOW_NORMAL)
+    cv2.imshow(image.image_name, image_floodfill)        
 
 
     image_floodfill  = image_floodfill.astype('float32') / 255.0        
@@ -221,17 +222,21 @@ def _checkBackground(image):
 
     
 
-    cv2.namedWindow('image4', cv2.WINDOW_NORMAL)
-    cv2.imshow('image4', image_backgroundresult) 
-    cv2.waitKey(0)
+    #cv2.namedWindow('image4', cv2.WINDOW_NORMAL)
+    #cv2.imshow('image4', image_backgroundresult) 
+    #cv2.waitKey(0)
 
     nonzeros = cv2.countNonZero(image_backgroundresult)
 
     print("{}  {}".format("nonzeros",nonzeros))
     print("percentage {}".format(nonzeros/image_gray.size))
 
+
+    #TODO: checken wie viele pixel einen unterschied zu einem 10x10 median feld vom hintergrund haben 
+
+
     #cv2.imshow("test",image_filter)
     #cv2.waitKey(0)
-
+    cv2.waitKey(0)
     return ""
 
