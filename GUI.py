@@ -41,6 +41,7 @@ class myUI(Frame, metaclass=Singleton):
         plot_landmarks = IntVar()
 
         self.filepath_label = StringVar()
+        self.filename_label = StringVar()
         self.score_label = StringVar()
         self.type_label = StringVar()
         self.filenumber_label = StringVar()
@@ -49,6 +50,7 @@ class myUI(Frame, metaclass=Singleton):
         self.currentDisplayedResult = 1
         self.typeLabelList = []
         self.scoreLabelList = []
+        self.checkindex_label= StringVar()
 
         self.expression_type_label = StringVar()
         self.glasses_type_label = StringVar()
@@ -89,7 +91,7 @@ class myUI(Frame, metaclass=Singleton):
         self.checkBox=Checkbutton(self,text="wenn möglich nach ICAO-Standard zuschneiden", command=self.check_cut)
         self.checkBox.grid(row=3, column=2,columnspan=3, sticky=W)
         self.checkBox=Checkbutton(self,text="Facial Landmarks der Bilder anzeigen", command=self.plot_landmarks)
-        self.checkBox.grid(row=4, column=2,columnspan=3, sticky=W)
+        self.checkBox.grid(row=3, column=6,columnspan=3, sticky=W)
 
     def check_cut (self):
         global Check_Cut
@@ -124,20 +126,20 @@ class myUI(Frame, metaclass=Singleton):
             detector = dlib.get_frontal_face_detector()
             #load dlib pre-trained predictor
             predictor = dlib.shape_predictor(os.path.realpath(__file__).replace('\\', '/').rsplit('/',1)[0]+'/'+"shape_predictor_68_face_landmarks.dat")
-
+            
             for image in self.file_list:
                 #run helper function to set the facial landmark array for each image and set a flag whether the number of faces != 1
                 (image.facial_landmarks, image.facial_landmarks_error) = getFacialLandmarks(image,detector,predictor)
-
+                
         #    checkExpression(self.file_list)
         #    checkGlasses(self.file_list)
         #    checkLighting(self.file_list)  #also includes color check
         #    checkBackground(self.file_list)
         #    checkDynamicRange(self.file_list)
-        #    checkContast(self.file_list)
+        #    checkContrast(self.file_list)
         #    checkGeometry(self.file_list,Check_Cut)
         #    if plot_landmarks==1:
-        #    plotFacialLandmarks(self.file_list)
+        #        plotFacialLandmarks(self.file_list)
 
             self.display_result(self.file_list[self.currentDisplayedResult-1])
         #ToDo
@@ -162,7 +164,7 @@ class myUI(Frame, metaclass=Singleton):
         #self.scoreLabel = Label(self, textvariable = self.score_label)
         #self.scoreLabel.grid(row = 7, column = 6, sticky = E+N)
 
-        #draw label that shows the image we are currently seeing
+        #draw label that shows the image-number we are currently seeing
         self.pageLabel = Label(self, textvariable = self.filenumber_label)
         self.pageLabel.grid(row=6, column=1, sticky=N)
         self.filenumber_label.set(str(self.currentDisplayedResult)+" / "+str(len(self.file_list)))
@@ -176,6 +178,11 @@ class myUI(Frame, metaclass=Singleton):
         if self.currentDisplayedResult < len(self.file_list):
             self.forth = Button(self, text=">", command = lambda: self.switchDisplayedImage(1))
             self.forth.grid(row=6, column=1, sticky=E)
+
+        #draw label that shows the image-name we are currently seeing
+        self.nameLabel = Label(self, textvariable = self.filename_label)
+        self.nameLabel.grid(row=6, column=2,columnspan=3, sticky=W)
+        self.filename_label.set("  "+str(self.file_list[self.currentDisplayedResult-1].image_name))
 
         if (len(self.file_list) > 0):
             #type

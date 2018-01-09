@@ -111,7 +111,7 @@ def _checkExpression(image, shape):
     #check whether the mouth is closed via definition
     if 2*between_lips<=lower_lip:
         #if its true, check with another definition
-        if mouthOpenFeature<= 0.017:
+        if mouthOpenFeature<= 0.043:
             close_mouth = True
         else:
             close_mouth = False
@@ -205,7 +205,7 @@ def _checkExpression(image, shape):
     elif no_raisingEyebrows == False:
         output_text = "No neutral expression, because the eyebrows are not correct"
     elif no_smile == False:
-        output_text ="No neutral expression, because the person "
+        output_text ="No neutral expression"
 
     #zahl1 = str(point48[0])
     #zahl2 = str(point48[1])
@@ -218,13 +218,12 @@ def _checkExpression(image, shape):
     #zahl9 = str(mouthOpenFeature)
     #zahl10 = str(noSmileFeatureRight)
     #zahl11 = str(noSmileFeatureLeft)
-    zahl12 = str(raisingEyebrowFeatureRight)
-    zahl13 = str(raisingEyebrowFeatureLeft)
-    #output_text = output_text + zahl12 + "/" + zahl13#zahl7 + "/" +zahl8#+ zahl1 +", "+zahl2 + " / " + zahl3 + ", " + zahl4 + "/" + zahl5 + ", " + zahl6
+    #zahl12 = str(raisingEyebrowFeatureRight)
+    #zahl13 = str(raisingEyebrowFeatureLeft)
+    #zahl14 = str(mouthOpenFeature)
+    #output_text = output_text + zahl10 + "/" + zahl11#+ zahl14
+    #+ zahl12 + "/" + zahl13#zahl7 + "/" +zahl8#+ zahl1 +", "+zahl2 + " / " + zahl3 + ", " + zahl4 + "/" + zahl5 + ", " + zahl6
     #"//" + str(between_lips) + "//" + str(lower_lip)
-    #cv2.circle(image,(447,63), 1, (0,0,255), -1)
-    #cv2.imshow("Over the Clouds - gray", image)
-    #image = cv2.imread(image)
     return output_text
 
 #this function calculated the difference betwenn two points
