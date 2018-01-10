@@ -23,7 +23,9 @@ def _checkContrast(image):
         
     image_data = cv2.imread(image.image_path + image.image_name )
     image_gray = cv2.cvtColor(image_data,cv2.COLOR_BGR2GRAY)
-        
+    
+    contrast_global = (numpy.amax(image_gray) - numpy.amin(image_gray))   
+    
     contrast_local = 0.0
         
     M = numpy.asfarray((
@@ -36,8 +38,6 @@ def _checkContrast(image):
     diff = image_gray - average_neighbors
 
     contrast_local = (1/image_gray.size) * numpy.sum(diff)
-
-    contrast_global = (numpy.amax(image_gray) - numpy.amin(image_gray))/(255.0)
 
     average_deviation = sqrt(numpy.var(image_gray))
        
