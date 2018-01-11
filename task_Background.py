@@ -1,6 +1,8 @@
 from PIL import Image, ImageDraw, ImageFilter
 import cv2
 import numpy
+import numpy.ma as ma
+
 from matplotlib import pyplot as plt
 
 import math
@@ -173,21 +175,21 @@ def _checkBackground(image):
     masked =  ((1-mask_stack) * img) # Blend
     masked = (masked * 255).astype('uint8')                     # Convert back to 8-bit 
     
-   
     
+    image_gray_masked = ma.masked_array(image_gray,mask_stack)
 
     #cv2.namedWindow('image2', cv2.WINDOW_NORMAL)
     #cv2.imshow('image2', masked)             
 
     
-    hist = numpy.histogram(masked,range(1, 256),density=True)
+    hist = numpy.histogram(image_gray_masked.compressed(),range(0, 256),density=True)
     
     entropy = 0
 
     for x in hist[0]:
         if (x != 0.0) : entropy = entropy - (x * math.log2(x))
 
-    print(entropy)
+    print("entropy: {}".format(entropy))
 
     h, w = image_gray.shape[:2]
     #mask_flood = numpy.zeros((h+2, w+2), numpy.uint8)
@@ -237,7 +239,7 @@ def _checkBackground(image):
     background_mask = mask.copy()
     background_mask [mask == 0.0] = 255
     background_mask [mask == 255.0] = 0
-    foreground_count = numpy.count_nonzero(background_mask)
+    background_count = numpy.count_nonzero(background_mask)
     background_mask = background_mask.astype('float32') / 255.0
 
     background_averagedeviation = ((background_average-40 <= image_gray) & (image_gray <= background_average+40))
@@ -248,7 +250,7 @@ def _checkBackground(image):
 
 
     background_averagedeviation_count = numpy.count_nonzero(background_averagedeviation) 
-    background_inconform_pixels = foreground_count - background_averagedeviation_count
+    background_inconform_pixels = background_count - background_averagedeviation_count
     background_inconform_pixels_percentage = background_inconform_pixels / image_gray.size
 
     cv2.namedWindow('background_mask', cv2.WINDOW_NORMAL)
@@ -258,8 +260,8 @@ def _checkBackground(image):
     
 
     
-    print("background_averagedeviation_count            {}".format(background_averagedeviation_count))
-    print("foreground_count                          {}".format(foreground_count))
+    print("background_averagedeviation_count         {}".format(background_averagedeviation_count))
+    print("background_count                          {}".format(background_count))
     print("background_inconform_pixels               {}".format(background_inconform_pixels))
     print("background_inconform_pixels_percentage    {}".format(background_inconform_pixels_percentage))
     

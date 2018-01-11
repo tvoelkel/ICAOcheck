@@ -112,7 +112,8 @@ class myUI(Frame, metaclass=Singleton):
 
         #add files to filelist
         for filename in os.listdir(dirpath):
-            self.file_list.append(MatchableImage(dirpath, filename))
+            if ".jpg" in filename or ".png" in filename or ".tif "in filename or ".bmp" in filename or ".jpeg" in filename:
+                self.file_list.append(MatchableImage(dirpath, filename))
 
         if (len(self.file_list) > 0):
             self.display_result(self.file_list[0])
