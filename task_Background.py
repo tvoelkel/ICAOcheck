@@ -1,6 +1,8 @@
 from PIL import Image, ImageDraw, ImageFilter
 import cv2
 import numpy
+import numpy.ma as ma
+
 from matplotlib import pyplot as plt
 
 import math
@@ -21,7 +23,7 @@ def checkBackground(imagelist):
     for image in imagelist:
 
        image.matching_results["Background"]=_checkBackground(image)
-
+    
 
 def _checkBackground(image):
 
@@ -137,8 +139,8 @@ def _checkBackground(image):
     image_filter = cv2.dilate(image_filter, None,iterations=10)
     image_filter = cv2.erode(image_filter, None,iterations=10)
 
-    cv2.namedWindow('image1', cv2.WINDOW_NORMAL)
-    cv2.imshow('image1', image_filter)      
+    #cv2.namedWindow('image1', cv2.WINDOW_NORMAL)
+    #cv2.imshow('image1', image_filter)      
 
 
     contour_info = []
@@ -173,28 +175,27 @@ def _checkBackground(image):
     masked =  ((1-mask_stack) * img) # Blend
     masked = (masked * 255).astype('uint8')                     # Convert back to 8-bit 
     
-   
     
+    image_gray_masked = ma.masked_array(image_gray,mask_stack)
 
-    cv2.namedWindow('image2', cv2.WINDOW_NORMAL)
-    cv2.imshow('image2', masked)             
+    #cv2.namedWindow('image2', cv2.WINDOW_NORMAL)
+    #cv2.imshow('image2', masked)             
 
     
-    hist = numpy.histogram(masked,range(1, 256),density=True)
+    hist = numpy.histogram(image_gray_masked.compressed(),range(0, 256),density=True)
     
     entropy = 0
 
     for x in hist[0]:
         if (x != 0.0) : entropy = entropy - (x * math.log2(x))
 
-    print(entropy)
+    print("entropy: {}".format(entropy))
 
     h, w = image_gray.shape[:2]
-    mask_flood = numpy.zeros((h+2, w+2), numpy.uint8)
-
-
-    #mask_flood [(mask == 0) + 1 ] = 255
-
+    #mask_flood = numpy.zeros((h+2, w+2), numpy.uint8)
+    mask_flood = numpy.pad(mask,1,mode="constant").astype('uint8') 
+    mask_flood = numpy.array_split(mask_flood,2,axis=1)
+    mask_flood = numpy.concatenate((mask_flood[1],mask_flood[0]), axis=1)
 
     #image_gray_split = numpy.hsplit(cv2.bilateralFilter(image_gray,9,5,5),2)
     image_gray_split = numpy.array_split(image_gray,2,axis=1)
@@ -204,13 +205,15 @@ def _checkBackground(image):
     
     image_floodfill = image_gray_split.copy()
     # Floodfill from point (0, 0)
-    cv2.floodFill(image_floodfill, mask_flood, (int(w/2),0), 0, loDiff=10,upDiff=10, flags=cv2.FLOODFILL_FIXED_RANGE )
-
+    cv2.floodFill(image_floodfill, mask_flood, (int(w/2),0), 0, loDiff=1,upDiff=1 )
+    
+     
+    
     image_floodfill = numpy.array_split(image_floodfill,2,axis=1)
     image_floodfill = numpy.concatenate((image_floodfill[1],image_floodfill[0]), axis=1)
     
-    cv2.namedWindow('image3', cv2.WINDOW_NORMAL)
-    cv2.imshow('image3', image_floodfill)          
+    #cv2.namedWindow(image.image_name, cv2.WINDOW_NORMAL)
+    #cv2.imshow(image.image_name, image_floodfill)        
 
 
     image_floodfill  = image_floodfill.astype('float32') / 255.0        
@@ -221,17 +224,50 @@ def _checkBackground(image):
 
     
 
-    cv2.namedWindow('image4', cv2.WINDOW_NORMAL)
-    cv2.imshow('image4', image_backgroundresult) 
-    cv2.waitKey(0)
+    #cv2.namedWindow('image4', cv2.WINDOW_NORMAL)
+    #cv2.imshow('image4', image_backgroundresult) 
+    #cv2.waitKey(0)
 
     nonzeros = cv2.countNonZero(image_backgroundresult)
 
     print("{}  {}".format("nonzeros",nonzeros))
     print("percentage {}".format(nonzeros/image_gray.size))
 
+
+    #from 5% left corner
+    background_average = int(numpy.average(image_gray[0:int(image_gray.shape[1]*0.05), 0:int(image_gray.shape[1]*0.05)]))
+    background_mask = mask.copy()
+    background_mask [mask == 0.0] = 255
+    background_mask [mask == 255.0] = 0
+    background_count = numpy.count_nonzero(background_mask)
+    background_mask = background_mask.astype('float32') / 255.0
+
+    background_averagedeviation = ((background_average-40 <= image_gray) & (image_gray <= background_average+40))
+    background_averagedeviation[background_averagedeviation==True] = 255 
+    background_averagedeviation[background_averagedeviation==False] = 0
+    background_averagedeviation.astype('float32') / 255.0
+    background_averagedeviation = ((background_averagedeviation*background_mask)*255).astype('uint8')
+
+
+    background_averagedeviation_count = numpy.count_nonzero(background_averagedeviation) 
+    background_inconform_pixels = background_count - background_averagedeviation_count
+    background_inconform_pixels_percentage = background_inconform_pixels / image_gray.size
+
+    cv2.namedWindow('background_mask', cv2.WINDOW_NORMAL)
+    cv2.imshow('background_mask', background_mask)
+    cv2.namedWindow('background_averagedeviation', cv2.WINDOW_NORMAL)
+    cv2.imshow('background_averagedeviation', background_averagedeviation)  
+    
+
+    
+    print("background_averagedeviation_count         {}".format(background_averagedeviation_count))
+    print("background_count                          {}".format(background_count))
+    print("background_inconform_pixels               {}".format(background_inconform_pixels))
+    print("background_inconform_pixels_percentage    {}".format(background_inconform_pixels_percentage))
+    
+
     #cv2.imshow("test",image_filter)
     #cv2.waitKey(0)
-
+    cv2.waitKey(0)
     return ""
 

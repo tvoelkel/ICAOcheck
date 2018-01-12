@@ -36,15 +36,17 @@ def _checkDynamicRange(image):
     rightEyeCenter = (int((image.facial_landmarks[37][0] + image.facial_landmarks[38][0] + image.facial_landmarks[40][0] + image.facial_landmarks[41][0]) / 4), int((image.facial_landmarks[37][1] + image.facial_landmarks[38][1] + image.facial_landmarks[40][1] + image.facial_landmarks[41][1]) / 4))
     M = (int((leftEyeCenter[0] + rightEyeCenter[0]) / 2), int((leftEyeCenter[1] + rightEyeCenter[1]) / 2))
 
-    image_data_np = image_data_np[M[1] - int((image.facial_landmarks[8][1]-M[1])*(2.0/3.0)) : image.facial_landmarks[8][1] , image.facial_landmarks[0][0] : image.facial_landmarks[16][0]]
+    y_hairline = M[1] -  int((image.facial_landmarks[8][1]-M[1])*(2.0/3.0))
+
+    image_data_np = image_data_np[y_hairline : image.facial_landmarks[8][1] , image.facial_landmarks[0][0] : image.facial_landmarks[16][0]]
 
     image_data_np_red = image_data_np[...,0]
     image_data_np_green = image_data_np[...,1]
     image_data_np_blue = image_data_np[...,2]
 
-    hist_red = numpy.histogram(image_data_np_red,255)
-    hist_green = numpy.histogram(image_data_np_green,255)
-    hist_blue = numpy.histogram(image_data_np_blue,255)
+    hist_red = numpy.histogram(image_data_np_red,range(0, 256))
+    hist_green = numpy.histogram(image_data_np_green,range(0, 256))
+    hist_blue = numpy.histogram(image_data_np_blue,range(0, 256))
 
     img = Image.fromarray( image_data_np_green)
     img.show()

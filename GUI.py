@@ -112,7 +112,8 @@ class myUI(Frame, metaclass=Singleton):
 
         #add files to filelist
         for filename in os.listdir(dirpath):
-            self.file_list.append(MatchableImage(dirpath, filename))
+            if ".jpg" in filename or ".png" in filename or ".tif "in filename or ".bmp" in filename or ".jpeg" in filename:
+                self.file_list.append(MatchableImage(dirpath, filename))
 
         if (len(self.file_list) > 0):
             self.display_result(self.file_list[0])
@@ -135,7 +136,7 @@ class myUI(Frame, metaclass=Singleton):
         #    checkLighting(self.file_list)  #also includes color check
         #    checkBackground(self.file_list)
         #    checkDynamicRange(self.file_list)
-        #    checkContast(self.file_list)
+        #    checkContrast(self.file_list)
         #    checkGeometry(self.file_list,Check_Cut)
         #    if plot_landmarks==1:
         #        plotFacialLandmarks(self.file_list)

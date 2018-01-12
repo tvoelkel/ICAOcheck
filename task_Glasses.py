@@ -1,5 +1,5 @@
 import dlib
-import cv2
+import cv2 as cv
 from PIL import Image
 import math
 import numpy
@@ -7,22 +7,21 @@ import sys
 from matplotlib import pyplot as plt
 from matplotlib import pyplot as mpimg
 
-from skimage import io
-
 def checkGlasses(imagelist):
     for image in imagelist:
         #image.matching_type_list.append("Expression Check: ")
         #image.matching_score_list.append(image.image_name)
-        if not image.facial_landmarks_error:
-            image.matching_results["Glasses"] =  _checkGlasses(image, image.facial_landmarks)
-        else:
-            image.matching_results["Glasses"] = "Failed: Number of detected faces != 1"
+        #if not image.facial_landmarks_error:
+        image.matching_results["Glasses"] =  _checkGlasses(image, image.facial_landmarks)
+        #else:
+        #    image.matching_results["Glasses"] = "Failed: Number of detected faces != 1"
 
 def _checkGlasses(image,shape):
 
-    checkExistenceOfGlasses = True
+    checkExistenceOfGlasses(image)
+    """
 
-    if checkExistenceOfGlasses == True:
+    if checkExistenceOfGlasses(image) == True:
         glasses = True
         if checkEyeVisibility(image, shape) == True:
             eyes_visibility = True
@@ -37,13 +36,40 @@ def _checkGlasses(image,shape):
         output_text = "The person wear glasses and the eyes are not visible"
     elif glasses == True and eyes_visibility == True:
         output_text = "The person wear glasses and the eyes are visible"
+    """
+    output_text = checkEyeVisibility(image, shape)
 
     return output_text
 
-    return checkEyeVisibility
-
 def checkExistenceOfGlasses(image):
     #ToDo check whether the person wear glasses or not
+
+    img = cv.imread(image.image_path+image.image_name,0)
+    img2 = img.copy()
+    template = cv.imread('template.png',0)
+    w, h = template.shape[::-1]
+    # All the 6 methods for comparison in a list
+    methods = ['cv.TM_CCOEFF', 'cv.TM_CCOEFF_NORMED', 'cv.TM_CCORR',
+                'cv.TM_CCORR_NORMED', 'cv.TM_SQDIFF', 'cv.TM_SQDIFF_NORMED']
+    for meth in methods:
+        img = img2.copy()
+        method = eval(meth)
+        # Apply template Matching
+        res = cv.matchTemplate(img,template,method)
+        min_val, max_val, min_loc, max_loc = cv.minMaxLoc(res)
+        # If the method is TM_SQDIFF or TM_SQDIFF_NORMED, take minimum
+        if method in [cv.TM_SQDIFF, cv.TM_SQDIFF_NORMED]:
+            top_left = min_loc
+        else:
+            top_left = max_loc
+        bottom_right = (top_left[0] + w, top_left[1] + h)
+        cv.rectangle(img,top_left, bottom_right, 255, 2)
+        plt.subplot(121),plt.imshow(res,cmap = 'gray')
+        plt.title('Matching Result'), plt.xticks([]), plt.yticks([])
+        plt.subplot(122),plt.imshow(img,cmap = 'gray')
+        plt.title('Detected Point'), plt.xticks([]), plt.yticks([])
+        plt.suptitle(meth)
+        plt.show()
     return False
 
 def checkEyeVisibility(image,shape):
@@ -65,15 +91,19 @@ def checkEyeVisibility(image,shape):
     left_eye_points = {}
     i = 36
     #get all points of the right eye
+    counter = 0
     while i<=41:
-        point = 'point'+str(i)
-        right_eye_points[point] = (int(shape[i][0]), int(shape[i][1]))
+        right_eye_points[counter] = (int(shape[i][0]), int(shape[i][1]))
         i = i+1
+        counter = counter+1
 
     #get all points of the left eye
+    counter = 0
     while i<=47:
-        point = 'point'+str(i)
-        left_eye_points[point] = (int(shape[i][0]), int(shape[i][1]))
+        left_eye_points[i] = (int(shape[i][0]), int(shape[i][1]))
         i = i+1
+        counter = counter+1
 
-    return False
+    text = str(right_eye_points[1][0])
+    text2 = str(right_eye_points[1][1])
+    return text + "/" + text2
