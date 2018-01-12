@@ -280,20 +280,20 @@ def cut(image_data,A,B,Mh,Mv,W,L,difference_allowed,dx,M):
     global array
     global ausrichtung
    
-    for i in range(0,19):
+    for i in range(0,20):
         j=int(i*1.5)
-        k=int(i*0.7)
+        k=int(i*0.2)
 
         new_A=W/(0.55+i/100)
-        new_B=L/(0.60+j/100)
+        new_B=L/(0.61+j/100)
 
         if new_A/new_B <0.74:
-            new_A=new_B*0.75
+            new_B=new_A/0.75
         if new_A/new_B >0.8:
-            new_B=new_A/0.79
+            new_A=new_B*0.79
 
         new_Mh= Mh-((Mh-new_A/2))
-        new_Mv=Mv-((Mv-new_B*(0.46-k/10)))
+        new_Mv=Mv-((Mv-new_B*(0.46-k/100)))
 
         proof(image_data,new_A,new_B,new_Mh,new_Mv,W,L,difference_allowed,dx)
     
