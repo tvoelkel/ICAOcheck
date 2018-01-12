@@ -12,6 +12,7 @@ from matplotlib import pyplot as mpimg
 from scipy import misc
 from datetime import datetime
 
+
 #variables
 image_ratio=False
 horizontal_ratio=False
@@ -24,28 +25,83 @@ image_l=0
 array = np.zeros((4), dtype = np.int)
 ausrichtung= "m"
 result_path=""
+final_path=""
 check_cut=0
+txtfile_path=""
+txtfile_str=""
+
+n_konform=0
+n_nkonform=0
+n_image=0
+n_horiverti=0
+n_width=0
+n_length=0
+n_roll=0
+n_zuschnitt=0
+n_nzuschnitt=0
 
 def checkGeometry(imagelist,Check_Cut):
     global result_path
+    global final_path
     global check_cut
+    global txtfile_path
+    global txtfile_str
+    global n_konform
+    global n_nkonform
+    global n_image
+    global n_horiverti
+    global n_width
+    global n_length
+    global n_roll
+    global n_zuschnitt
+    global n_nzuschnitt
     check_cut=Check_Cut
+
+    failedimage_str=""
     
-    print(str(check_cut))
+    #print(str(check_cut))
+    
+    result_path = imagelist[0].image_path[:-1]
+    now= datetime.now()
+    _now='%s.%s.%s_%s-%s-%s' % (now.day, now.month, now.year, now.hour, now.minute, now.second)
+    
+    path=imagelist[0].image_path[:-1]
+    path = path.rpartition("/")
+    #print(str(path[0]))
+    folder_path=path[0]+"/result-"+path[2]+"-"+str(_now)
+    os.mkdir(folder_path)
+    txtfile_path=path[0]+"/result-"+path[2]+"-"+str(_now)+"/result.txt" 
+    
+    open(txtfile_path,'w').close()
 
     if check_cut==1:
-        now= datetime.now()
-        _now='%s.%s.%s_%s-%s-%s' % (now.day, now.month, now.year, now.hour, now.minute, now.second)
-        result_path=imagelist[0].image_path[:-1]+"-result"+str(_now)
-        os.mkdir(result_path)
+        final_path= result_path + "-result"+str(_now)
+        os.mkdir(final_path)
 
     for image in imagelist:
         #load image data
         #image_data = io.imread(image.image_path + image.image_name)
         if not image.facial_landmarks_error:
             image.matching_results["Geometry"] =  _checkGeometry(image, image.facial_landmarks)
+            
         else:
             image.matching_results["Geometry"] = "Failed: Number of detected faces != 1"
+            failedimage_str=failedimage_str+str(image.image_name)
+    
+    with open(txtfile_path, "a") as fh:
+	        fh.write("Bilder ICAO konform: "+str(n_konform)
+            +"\n"+"Bilder ICAO nicht konform: "+str(n_nkonform)
+            +"\n"+"Seitenverhältnis stimmt nicht: "+str(n_image)
+            +"\n"+"Bild nicht mittig: "+str(n_horiverti)
+            +"\n"+"Bildbreite nicht: "+str(n_width)
+            +"\n"+"Bildlänge nicht: "+str(n_length)
+            +"\n"+"zu stark gedreht: "+str(n_roll)
+            +"\n"+"Zuschnitt möglich: "+str(n_zuschnitt)
+            +"\n"+"Zuschnitt nicht möglich: "+str(n_nzuschnitt)
+            +"\n"+"Bilder die nicht geprüft werden:"
+            +"\n"+failedimage_str
+            +"\n\n"+txtfile_str)
+            
 
 def _checkGeometry(image, shape):
     #get image data
@@ -77,7 +133,19 @@ def _checkGeometry(image, shape):
     global head_roll
     global image_w
     global image_l
-    global result_path
+    global final_path
+    global txtfile_path
+    global txtfile_str
+
+    global n_konform
+    global n_nkonform
+    global n_image
+    global n_horiverti
+    global n_width
+    global n_length
+    global n_roll
+    global n_zuschnitt
+    global n_nzuschnitt
     
     #calculation of Terms
     imagewidth_A= int (len(image_data[0]))
@@ -105,18 +173,25 @@ def _checkGeometry(image, shape):
 
     if image_ratio == True and horizontal_ratio == True and vertical_ratio == True and headwidth_ratio == True and headlength_ratio == True and head_roll==True:
         ausgabe= "ICAO konform"
+        n_konform=n_konform+1
     else:
         ausgabe="nicht ICAO konform"
+        n_nkonform=n_nkonform+1
     if image_ratio == False:
         ausgabe=ausgabe+", \nSeitenverhältnis des Bildes nicht korrekt"
+        n_image=n_image+1
     if horizontal_ratio == False or vertical_ratio == False:
         ausgabe=ausgabe+", \nGesicht nicht mittig"
+        n_horiverti=n_horiverti+1
     if headwidth_ratio == False:
         ausgabe=ausgabe+", \nVerhältnis: Kopfbreite/Bildbreite passt nicht"
+        n_width=n_width+1
     if headlength_ratio == False:
         ausgabe=ausgabe+", \nVerhältnis: Kopflänge/Bildlänge passt nicht"
+        n_length=n_length+1
     if head_roll==False:
         ausgabe=ausgabe+", \nKopf zu stark gedreht"
+        n_roll=n_roll+1
 
     #cut
     if image_ratio == False or horizontal_ratio == False or vertical_ratio == False or headwidth_ratio == False or headlength_ratio == False or head_roll==False:
@@ -129,11 +204,16 @@ def _checkGeometry(image, shape):
         
             cutted_img= image_data[y1:y2,x1:x2]
             ausgabe=ausgabe+" \n--> Zuschnitt ist möglich"
+            n_zuschnitt=n_zuschnitt+1
             if check_cut==1:
-                cv2.imwrite(result_path+"\\" + image.image_name[:-4]+"-cut.jpg", cutted_img)
-            #cv2.imshow("cutted", cutted_img)
+                cv2.imwrite(final_path+"\\" + image.image_name[:-4]+"-cut.jpg", cutted_img, [int(cv2.IMWRITE_JPEG_QUALITY), 100])
         else:
             ausgabe=ausgabe+" \n--> Zuschnitt nicht möglich"
+            n_nzuschnitt=n_nzuschnitt+1
+
+    #with open(txtfile_path, "a") as fh:
+	#        fh.write(str(image.image_name)+":\n"+ausgabe+"\n\n")
+    txtfile_str=txtfile_str+str(image.image_name)+":\n"+ausgabe+"\n\n"
 
     return ausgabe
 
@@ -176,7 +256,23 @@ def proof(image_data,A,B,Mh,Mv,W,L,difference_allowed,dx):
         headlength_ratio=True
     else:
         headlength_ratio=False
-    
+    """
+    print("A: %i " % (A))
+    print("B: %i " % (B))
+    print("Mh: %i " % (Mh))
+    print("Mv: %i " % (Mv))
+    print("W: %i " % (W))
+    print("L: %i " % (L))
+    print("D_exist: %i " % (dx))
+    print("D_allowed: %i " % (difference_allowed))
+
+    print("image: %r " % (image_ratio))
+    print("hori: %r " % (horizontal_ratio))
+    print("verti: %r " % (vertical_ratio))
+    print("headw: %r " % (headwidth_ratio))
+    print("headl: %r " % (headlength_ratio))
+    print("headroll: %r " % (head_roll))
+    """
 
 def cut(image_data,A,B,Mh,Mv,W,L,difference_allowed,dx,M):
     global image_l
@@ -184,12 +280,12 @@ def cut(image_data,A,B,Mh,Mv,W,L,difference_allowed,dx,M):
     global array
     global ausrichtung
    
-    for i in range(0,9):
+    for i in range(0,19):
         j=int(i*1.5)
         k=int(i*0.7)
 
-        new_A=W/(0.65+i/10)
-        new_B=L/(0.75+j/10)
+        new_A=W/(0.55+i/100)
+        new_B=L/(0.60+j/100)
 
         if new_A/new_B <0.74:
             new_A=new_B*0.75
@@ -214,3 +310,88 @@ def cut(image_data,A,B,Mh,Mv,W,L,difference_allowed,dx,M):
             return True
 
     return False
+
+    
+    
+    
+    """
+    for i in range(0,25):
+        for j in range(0,30):
+            new_A=W/(0.5+i/100)
+            new_B=L/(0.6+j/100)
+
+            
+            #if new_A/new_B <0.74:
+            #    new_A=new_B*0.74
+            #if new_A/new_B >0.8:
+            #    new_B=new_A/0.8
+            
+
+            new_Mh=new_A/2
+            new_Mv=new_B*(0.47)
+            #new_Mv=Mv-(B-new_B)*0.51
+
+            proof(image_data,new_A,new_B,new_Mh,new_Mv,W,L,difference_allowed,dx)
+    
+            x1=int(Mh-new_Mh)
+            x2=int(x1+new_A)
+            y1=int(Mv-new_Mv)
+            y2=int(y1+new_B)
+    
+            if image_ratio == True and horizontal_ratio == True and vertical_ratio == True and headwidth_ratio == True and headlength_ratio == True and head_roll==True and x1>=0 and y1>=0 and x2<=image_w and y2<=image_l:           
+                array[0] = (y1)
+                array[1] = (y2)
+                array[2] = (x1)
+                array[3] = (x2)
+                return True
+
+    return False            
+    """
+
+    
+    """
+    new_B=L/0.6
+    if new_B>B
+        new_B=B
+    for i in range(0,6)
+        if A/new_B>(0.8-i*100)
+            new_A=new_B*0.8
+            if new_A
+    """
+
+
+    """
+    for i in range(0,25):
+        j=int(i*1.1)
+        k=int(i*0.3)
+
+        new_A=W/(0.50+i/100)
+        new_B=L/(0.625+j/100)
+
+        if new_A/new_B <0.74:
+            new_A=new_B*0.75
+        if new_A/new_B >0.8:
+            new_B=new_A/0.79
+
+        new_Mh= Mh-((Mh-new_A/2))
+        new_Mv=Mv-((Mv-new_B*(0.46)))
+        #new_Mv=Mv-(Mv-(Mv-(B-new_B)*0.5))
+
+
+        proof(image_data,new_A,new_B,new_Mh,new_Mv,W,L,difference_allowed,dx)
+    
+        x1=int(Mh-new_Mh)
+        x2=int(x1+new_A)
+        y1=int(Mv-new_Mv)
+        y2=int(y1+new_B)
+    
+        if image_ratio == True and horizontal_ratio == True and vertical_ratio == True and headwidth_ratio == True and headlength_ratio == True and head_roll==True and x1>=0 and y1>=0 and x2<=image_w and y2<=image_l:           
+            array[0] = (y1)
+            array[1] = (y2)
+            array[2] = (x1)
+            array[3] = (x2)
+            return True
+
+    return False
+
+    """
