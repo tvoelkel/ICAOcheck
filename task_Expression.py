@@ -107,7 +107,7 @@ def _checkExpression(image, shape):
     #height between point 62 and point 66
     height62_66 = point66[1]-point62[1]
     #set the height62_66 in relation
-    mouthOpenFeature = height62_66/height_8_24
+    mouthOpenFeature = abs(height62_66/height_8_24)
     #check whether the mouth is closed via definition
     if 2*between_lips<=lower_lip:
         #if its true, check with another definition
