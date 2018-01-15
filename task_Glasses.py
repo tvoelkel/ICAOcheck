@@ -2,7 +2,7 @@ import dlib
 import cv2 as cv
 from PIL import Image
 import math
-import numpy
+import numpy as np
 import sys
 from matplotlib import pyplot as plt
 from matplotlib import pyplot as mpimg
@@ -18,7 +18,7 @@ def checkGlasses(imagelist):
 
 def _checkGlasses(image,shape):
 
-    #checkExistenceOfGlasses(image)
+    checkExistenceOfGlasses(image)
     """
 
     if checkExistenceOfGlasses(image) == True:
@@ -37,7 +37,10 @@ def _checkGlasses(image,shape):
     elif glasses == True and eyes_visibility == True:
         output_text = "The person wear glasses and the eyes are visible"
     """
-    output_text = checkEyeVisibility(image, shape)
+    if checkEyeVisibility(image, shape) == True:
+        output_text = "konform"
+    else:
+        output_text = "nicht konform"
 
     return output_text
 
@@ -46,30 +49,32 @@ def checkExistenceOfGlasses(image):
 
     img = cv.imread(image.image_path+image.image_name,0)
     img2 = img.copy()
-    template = cv.imread('template.png',0)
+    template = cv.imread("C:/Users/Patrick Liedtke/github/ICAOcheck/template2.jpg",0)#'F:/test pictures/template.jpg')#'C:/Users/Patrick Liedtke/github/ICAOcheck/template.jpg')#image.image_path+image.image_name,0)##)#'template.jpg',0)
+    #template = np.array(template, dtype=np.uint8)
     w, h = img.shape[::-1]
+    #template.astype(0)
     # All the 6 methods for comparison in a list
-    methods = ['cv.TM_CCOEFF', 'cv.TM_CCOEFF_NORMED', 'cv.TM_CCORR',
-                'cv.TM_CCORR_NORMED', 'cv.TM_SQDIFF', 'cv.TM_SQDIFF_NORMED']
-    for meth in methods:
-        img = img2.copy()
-        method = eval(meth)
-        # Apply template Matching
-        res = cv.matchTemplate(img,template,method)
-        min_val, max_val, min_loc, max_loc = cv.minMaxLoc(res)
-        # If the method is TM_SQDIFF or TM_SQDIFF_NORMED, take minimum
-        if method in [cv.TM_SQDIFF, cv.TM_SQDIFF_NORMED]:
-            top_left = min_loc
-        else:
-            top_left = max_loc
-        bottom_right = (top_left[0] + w, top_left[1] + h)
-        cv.rectangle(img,top_left, bottom_right, 255, 2)
-        plt.subplot(121),plt.imshow(res,cmap = 'gray')
-        plt.title('Matching Result'), plt.xticks([]), plt.yticks([])
-        plt.subplot(122),plt.imshow(img,cmap = 'gray')
-        plt.title('Detected Point'), plt.xticks([]), plt.yticks([])
-        plt.suptitle(meth)
-        plt.show()
+    #methods = ['cv.TM_CCOEFF', 'cv.TM_CCOEFF_NORMED', 'cv.TM_CCORR',
+    #            'cv.TM_CCORR_NORMED', 'cv.TM_SQDIFF', 'cv.TM_SQDIFF_NORMED']
+    #for meth in methods:
+    img = img2.copy()
+    method = eval('cv.TM_CCORR')
+    # Apply template Matching
+    res = cv.matchTemplate(img,template,method)
+    min_val, max_val, min_loc, max_loc = cv.minMaxLoc(res)
+    # If the method is TM_SQDIFF or TM_SQDIFF_NORMED, take minimum
+    # if method in [cv.TM_SQDIFF, cv.TM_SQDIFF_NORMED]:
+    #     top_left = min_loc
+    # else:
+    top_left = max_loc
+    bottom_right = (top_left[0] + w, top_left[1] + h)
+    cv.rectangle(img,top_left, bottom_right, 255, 2)
+    plt.subplot(121),plt.imshow(res,cmap = 'gray')
+    plt.title('Matching Result'), plt.xticks([]), plt.yticks([])
+    plt.subplot(122),plt.imshow(img,cmap = 'gray')
+    plt.title('Detected Point'), plt.xticks([]), plt.yticks([])
+    plt.suptitle('cv.TM_CCOEFF_NORMED')
+    plt.show()
     return False
 
 def checkEyeVisibility(image,shape):
