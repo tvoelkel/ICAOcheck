@@ -107,7 +107,7 @@ def _checkExpression(image, shape):
     #height between point 62 and point 66
     height62_66 = point66[1]-point62[1]
     #set the height62_66 in relation
-    mouthOpenFeature = height62_66/height_8_24
+    mouthOpenFeature = abs(height62_66/height_8_24)
     #check whether the mouth is closed via definition
     if 2*between_lips<=lower_lip:
         #if its true, check with another definition
@@ -144,8 +144,8 @@ def _checkExpression(image, shape):
     height54_62 = point62[1]-point54[1]
     #set this height in relation
     noSmileFeatureLeft = abs(height54_62/height_8_24)
-    if noSmileFeature <= 0.015:
-        if noSmileFeatureRight <=0.017 and noSmileFeatureLeft <=0.017:
+    if noSmileFeature <= 0.023:
+        if noSmileFeatureRight <=0.041 and noSmileFeatureLeft <=0.041:
             no_smile = True
         else:
             no_smile = False
@@ -191,7 +191,7 @@ def _checkExpression(image, shape):
     #set the average in relation
     raisingEyebrowFeatureLeft = averageEyebrowLeft/height_8_24
 
-    if raisingEyebrowFeatureRight <= 0.035 and raisingEyebrowFeatureLeft <= 0.035:
+    if raisingEyebrowFeatureRight <= 0.0475 and raisingEyebrowFeatureLeft <= 0.0475:
         no_raisingEyebrows = True
     else:
         no_raisingEyebrows = False
@@ -220,10 +220,7 @@ def _checkExpression(image, shape):
     #zahl11 = str(noSmileFeatureLeft)
     #zahl12 = str(raisingEyebrowFeatureRight)
     #zahl13 = str(raisingEyebrowFeatureLeft)
-    #zahl14 = str(mouthOpenFeature)
-    #output_text = output_text + zahl10 + "/" + zahl11#+ zahl14
-    #+ zahl12 + "/" + zahl13#zahl7 + "/" +zahl8#+ zahl1 +", "+zahl2 + " / " + zahl3 + ", " + zahl4 + "/" + zahl5 + ", " + zahl6
-    #"//" + str(between_lips) + "//" + str(lower_lip)
+    #zahl14 = str(noSmileFeature)
     return output_text
 
 #this function calculated the difference betwenn two points

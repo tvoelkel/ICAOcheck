@@ -11,14 +11,14 @@ def checkGlasses(imagelist):
     for image in imagelist:
         #image.matching_type_list.append("Expression Check: ")
         #image.matching_score_list.append(image.image_name)
-        #if not image.facial_landmarks_error:
-        image.matching_results["Glasses"] =  _checkGlasses(image, image.facial_landmarks)
-        #else:
-        #    image.matching_results["Glasses"] = "Failed: Number of detected faces != 1"
+        if not image.facial_landmarks_error:
+            image.matching_results["Glasses"] =  _checkGlasses(image, image.facial_landmarks)
+        else:
+            image.matching_results["Glasses"] = "Failed: Number of detected faces != 1"
 
 def _checkGlasses(image,shape):
 
-    checkExistenceOfGlasses(image)
+    #checkExistenceOfGlasses(image)
     """
 
     if checkExistenceOfGlasses(image) == True:
@@ -47,7 +47,7 @@ def checkExistenceOfGlasses(image):
     img = cv.imread(image.image_path+image.image_name,0)
     img2 = img.copy()
     template = cv.imread('template.png',0)
-    w, h = template.shape[::-1]
+    w, h = img.shape[::-1]
     # All the 6 methods for comparison in a list
     methods = ['cv.TM_CCOEFF', 'cv.TM_CCOEFF_NORMED', 'cv.TM_CCORR',
                 'cv.TM_CCORR_NORMED', 'cv.TM_SQDIFF', 'cv.TM_SQDIFF_NORMED']
@@ -90,20 +90,57 @@ def checkEyeVisibility(image,shape):
     right_eye_points = {}
     left_eye_points = {}
     i = 36
-    #get all points of the right eye
+    #get all points of the right eye (points 36-41)
     counter = 0
     while i<=41:
         right_eye_points[counter] = (int(shape[i][0]), int(shape[i][1]))
         i = i+1
         counter = counter+1
 
-    #get all points of the left eye
+    #get all points of the left eye (points 42-47)
     counter = 0
     while i<=47:
-        left_eye_points[i] = (int(shape[i][0]), int(shape[i][1]))
+        left_eye_points[counter] = (int(shape[i][0]), int(shape[i][1]))
         i = i+1
         counter = counter+1
 
     text = str(right_eye_points[1][0])
     text2 = str(right_eye_points[1][1])
-    return text + "/" + text2
+
+    #lowest face point (middle)
+    point8 = (int(shape[8][0]), int(shape[8][1]))
+    #highest face point (middle of the left eyebrow)
+    point24 = (int(shape[24][0]), int(shape[24][1]))
+    #height betwenn point 8 and point 24
+    height_8_24 = point8[1]-point24[1]
+
+    #height between point 36 (right point of the right eye) and point 39 (left point of the right eye)
+    height36_39 = right_eye_points[0][1]-right_eye_points[3][1]
+    #set the height in relation
+    rightEyeLeftRightCheck = abs(height36_39/height_8_24)
+    #height between point 42 (right point of the left eye) and point 45 (left point of the left eye)
+    height42_45 = left_eye_points[0][1]-left_eye_points[3][1]
+    #set the height in relation
+    leftEyeLeftRightCheck = abs(height42_45/height_8_24)
+    #height between point 36 (right point of the right eye) and point 45 (left point of the left eye)
+    height36_45 = right_eye_points[0][1]-left_eye_points[3][1]
+    #set the height in relation
+    bothEyeCheck1 = abs(height36_45/height_8_24)
+    #height between point 39 (left point of the right eye) and point 42 (right point of the left eye)
+    height39_42 = right_eye_points[3][1]-left_eye_points[0][1]
+    #set the height in relation
+    bothEyeCheck2 = abs(height39_42/height_8_24)
+
+    if leftEyeLeftRightCheck <= 0.027 and rightEyeLeftRightCheck <= 0.027:
+        if bothEyeCheck1 <= 0.037 and bothEyeCheck2 <= 0.023:
+            eyes_visibility = True
+        else:
+            eyes_visibility = False
+    else:
+        eyes_visibility = False
+
+    #zahl1 = str(rightEyeLeftRightCheck)
+    #zahl2 = str(leftEyeLeftRightCheck)
+    #zahl3 = str(bothEyeCheck1)
+    #zahl4 = str(bothEyeCheck2)
+    return eyes_visibility
