@@ -1,11 +1,19 @@
 import dlib
-import cv2 as cv
-from PIL import Image
+import cv2
+
 import math
 import numpy as np
 import sys
 from matplotlib import pyplot as plt
 from matplotlib import pyplot as mpimg
+from PIL import Image
+
+
+import numpy as  np
+import os
+from skimage import io
+from scipy import misc
+
 
 def checkGlasses(imagelist):
     for image in imagelist:
@@ -47,9 +55,9 @@ def _checkGlasses(image,shape):
 def checkExistenceOfGlasses(image):
     #ToDo check whether the person wear glasses or not
 
-    img = cv.imread(image.image_path+image.image_name,0)
+    img = cv2.imread(image.image_path+image.image_name,0)
     img2 = img.copy()
-    template = cv.imread("C:/Users/Patrick Liedtke/github/ICAOcheck/template2.jpg",0)#'F:/test pictures/template.jpg')#'C:/Users/Patrick Liedtke/github/ICAOcheck/template.jpg')#image.image_path+image.image_name,0)##)#'template.jpg',0)
+    template = cv2.imread("C:/Users/krusc/Desktop/brille.jpg",0)#'F:/test pictures/template.jpg')#'C:/Users/Patrick Liedtke/github/ICAOcheck/template.jpg')#image.image_path+image.image_name,0)##)#'template.jpg',0)
     #template = np.array(template, dtype=np.uint8)
     w, h = img.shape[::-1]
     #template.astype(0)
@@ -58,22 +66,22 @@ def checkExistenceOfGlasses(image):
     #            'cv.TM_CCORR_NORMED', 'cv.TM_SQDIFF', 'cv.TM_SQDIFF_NORMED']
     #for meth in methods:
     img = img2.copy()
-    method = eval('cv.TM_CCORR')
+    method = eval('cv2.TM_CCORR_NORMED')
     # Apply template Matching
-    res = cv.matchTemplate(img,template,method)
-    min_val, max_val, min_loc, max_loc = cv.minMaxLoc(res)
+    res = cv2.matchTemplate(img,template,method)
+    min_val, max_val, min_loc, max_loc = cv2.minMaxLoc(res)
     # If the method is TM_SQDIFF or TM_SQDIFF_NORMED, take minimum
     # if method in [cv.TM_SQDIFF, cv.TM_SQDIFF_NORMED]:
     #     top_left = min_loc
     # else:
     top_left = max_loc
     bottom_right = (top_left[0] + w, top_left[1] + h)
-    cv.rectangle(img,top_left, bottom_right, 255, 2)
+    cv2.rectangle(img,top_left, bottom_right, 255, 2)
     plt.subplot(121),plt.imshow(res,cmap = 'gray')
     plt.title('Matching Result'), plt.xticks([]), plt.yticks([])
     plt.subplot(122),plt.imshow(img,cmap = 'gray')
     plt.title('Detected Point'), plt.xticks([]), plt.yticks([])
-    plt.suptitle('cv.TM_CCOEFF_NORMED')
+    plt.suptitle('cv2.TM_CCORR_NORMED')
     plt.show()
     return False
 
