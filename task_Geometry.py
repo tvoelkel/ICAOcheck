@@ -150,8 +150,8 @@ def _checkGeometry(image, shape):
     #calculation of Terms
     imagewidth_A= int (len(image_data[0]))
     imageheight_B= int (len(image_data))
-    horizontaldistance_Mh= int((leftEyeCenter[0] + rightEyeCenter[0]) / 2)
-    verticaldistance_Mv= int((leftEyeCenter[1] + rightEyeCenter[1]) / 2)
+    horizontaldistance_Mh= int(M[0])
+    verticaldistance_Mv= int(M[1])
     #headwidth_W= int(shape[16][0]-shape[0][0])
     headwidth_W=int(math.sqrt(((shape[16][0]-shape[0][0])**2)+((shape[16][1]-shape[0][1])**2)))
     #headlength_L= 2*(shape[8][1] - M[1])
@@ -292,8 +292,8 @@ def cut(image_data,A,B,Mh,Mv,W,L,difference_allowed,dx,M):
         if new_A/new_B >0.8:
             new_A=new_B*0.79
 
-        new_Mh= Mh-((Mh-new_A/2))
-        new_Mv=Mv-((Mv-new_B*(0.46-k/100)))
+        new_Mh= new_A/2
+        new_Mv=new_B*(0.46-k/100)
 
         proof(image_data,new_A,new_B,new_Mh,new_Mv,W,L,difference_allowed,dx)
     
