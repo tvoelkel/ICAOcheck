@@ -90,7 +90,7 @@ class myUI(Frame, metaclass=Singleton):
         self.checkButton.grid(row=3, column=1, sticky=W)
         self.checkBox=Checkbutton(self,text="wenn möglich nach ICAO-Standard zuschneiden", command=self.check_cut)
         self.checkBox.grid(row=3, column=2,columnspan=3, sticky=W)
-        self.checkBox=Checkbutton(self,text="Facial Landmarks der Bilder anzeigen", command=self.plot_landmarks)
+        self.checkBox=Checkbutton(self,text="Bilder mit Facial Landmarks speichern", command=self.plot_landmarks)
         self.checkBox.grid(row=3, column=6,columnspan=3, sticky=W)
 
     def check_cut (self):
@@ -126,11 +126,11 @@ class myUI(Frame, metaclass=Singleton):
             detector = dlib.get_frontal_face_detector()
             #load dlib pre-trained predictor
             predictor = dlib.shape_predictor(os.path.realpath(__file__).replace('\\', '/').rsplit('/',1)[0]+'/'+"shape_predictor_68_face_landmarks.dat")
-            
+
             for image in self.file_list:
                 #run helper function to set the facial landmark array for each image and set a flag whether the number of faces != 1
                 (image.facial_landmarks, image.facial_landmarks_error) = getFacialLandmarks(image,detector,predictor)
-                
+
         #    checkExpression(self.file_list)
         #    checkGlasses(self.file_list)
         #    checkLighting(self.file_list)  #also includes color check
