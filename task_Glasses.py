@@ -26,8 +26,8 @@ def checkGlasses(imagelist):
 
 def _checkGlasses(image,shape):
 
-    checkExistenceOfGlasses(image)
-    """
+    #checkExistenceOfGlasses(image)
+
 
     if checkExistenceOfGlasses(image) == True:
         glasses = True
@@ -44,12 +44,12 @@ def _checkGlasses(image,shape):
         output_text = "The person wear glasses and the eyes are not visible"
     elif glasses == True and eyes_visibility == True:
         output_text = "The person wear glasses and the eyes are visible"
-    """
-    if checkEyeVisibility(image, shape) == True:
-        output_text = "konform"
-    else:
-        output_text = "nicht konform"
 
+    # if checkEyeVisibility(image, shape) == True:
+    #     output_text = "konform"
+    # else:
+    #     output_text = "nicht konform"
+    #
     return output_text
 
 def checkExistenceOfGlasses(image):
@@ -57,8 +57,15 @@ def checkExistenceOfGlasses(image):
 
     img = cv2.imread(image.image_path+image.image_name,0)
     img2 = img.copy()
-    template = cv2.imread("C:/Users/krusc/Desktop/brille.jpg",0)#'F:/test pictures/template.jpg')#'C:/Users/Patrick Liedtke/github/ICAOcheck/template.jpg')#image.image_path+image.image_name,0)##)#'template.jpg',0)
-    #template = np.array(template, dtype=np.uint8)
+    val = 0
+
+    #templates = {}
+    #templates[0] = cv2.imread("C:/Users/Patrick Liedtke/github/ICAOcheck/brille1.jpg",0)#"C:/Users/krusc/Desktop/brille.jpg",0)#'F:/test pictures/template.jpg')#'C:/Users/Patrick Liedtke/github/ICAOcheck/template.jpg')#image.image_path+image.image_name,0)##)#'template.jpg',0)
+    #templates[1] = cv2.imread("C:/Users/Patrick Liedtke/github/ICAOcheck/brille2.jpg",0)
+    #templates[2] = cv2.imread("C:/Users/Patrick Liedtke/github/ICAOcheck/brille3.jpg",0)
+    #templates[3] = cv2.imread("C:/Users/Patrick Liedtke/github/ICAOcheck/brille4.jpg",0)
+    template = cv2.imread("C:/Users/Patrick Liedtke/github/ICAOcheck/brille3.jpg",0)
+    #for template in templates:
     w, h = img.shape[::-1]
     #template.astype(0)
     # All the 6 methods for comparison in a list
@@ -67,23 +74,30 @@ def checkExistenceOfGlasses(image):
     #for meth in methods:
     img = img2.copy()
     method = eval('cv2.TM_CCORR_NORMED')
-    # Apply template Matching
+        # Apply template Matching
     res = cv2.matchTemplate(img,template,method)
     min_val, max_val, min_loc, max_loc = cv2.minMaxLoc(res)
+    if max_val > val:
+        val = max_val
+
     # If the method is TM_SQDIFF or TM_SQDIFF_NORMED, take minimum
     # if method in [cv.TM_SQDIFF, cv.TM_SQDIFF_NORMED]:
     #     top_left = min_loc
     # else:
-    top_left = max_loc
-    bottom_right = (top_left[0] + w, top_left[1] + h)
-    cv2.rectangle(img,top_left, bottom_right, 255, 2)
-    plt.subplot(121),plt.imshow(res,cmap = 'gray')
-    plt.title('Matching Result'), plt.xticks([]), plt.yticks([])
-    plt.subplot(122),plt.imshow(img,cmap = 'gray')
-    plt.title('Detected Point'), plt.xticks([]), plt.yticks([])
-    plt.suptitle('cv2.TM_CCORR_NORMED')
-    plt.show()
-    return False
+    #top_left = max_val#max_loc
+    if val >= 0.995:
+        return True
+    else:
+        return False
+    # bottom_right = (top_left[0] + w, top_left[1] + h)
+    # cv2.rectangle(img,top_left, bottom_right, 255, 2)
+    # plt.subplot(121),plt.imshow(res,cmap = 'gray')
+    # plt.title('Matching Result'), plt.xticks([]), plt.yticks([])
+    # plt.subplot(122),plt.imshow(img,cmap = 'gray')
+    # plt.title('Detected Point'), plt.xticks([]), plt.yticks([])
+    # plt.suptitle('cv2.TM_CCORR_NORMED')
+    # plt.show()
+    # return False
 
 def checkEyeVisibility(image,shape):
     #ToDo check the visibility of the eyes when the person wear glasses
