@@ -1,3 +1,12 @@
+'''/*******************************************************
+ * Copyright (C) 2017-2018 Patrick Liedtke <patrick.liedtke@st.ovgu.de>
+ *
+ * This file is part of ICAO Check.
+ *
+ * ICAO Check can not be copied and/or distributed without the express
+ * permission of Patrick Liedtke
+ *******************************************************/'''
+
 import dlib
 import cv2
 
