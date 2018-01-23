@@ -17,17 +17,13 @@ from scipy import misc
 
 def checkGlasses(imagelist):
     for image in imagelist:
-        #image.matching_type_list.append("Expression Check: ")
-        #image.matching_score_list.append(image.image_name)
+        #for every image it will check whether a face is detected
         if not image.facial_landmarks_error:
             image.matching_results["Glasses"] =  _checkGlasses(image, image.facial_landmarks)
         else:
             image.matching_results["Glasses"] = "Failed: Number of detected faces != 1"
 
 def _checkGlasses(image,shape):
-
-    #checkExistenceOfGlasses(image)
-
 
     if checkExistenceOfGlasses(image) == True:
         glasses = True
@@ -45,50 +41,27 @@ def _checkGlasses(image,shape):
     elif glasses == True and eyes_visibility == True:
         output_text = "The person wear glasses and the eyes are visible"
 
-    # if checkEyeVisibility(image, shape) == True:
-    #     output_text = "konform"
-    # else:
-    #     output_text = "nicht konform"
-    #
     return output_text
 
 def checkExistenceOfGlasses(image):
-    #ToDo check whether the person wear glasses or not
-
+    #get image data
     img = cv2.imread(image.image_path+image.image_name,0)
     img2 = img.copy()
-    val = 0
-
-    #templates = {}
-    #templates[0] = cv2.imread("C:/Users/Patrick Liedtke/github/ICAOcheck/brille1.jpg",0)#"C:/Users/krusc/Desktop/brille.jpg",0)#'F:/test pictures/template.jpg')#'C:/Users/Patrick Liedtke/github/ICAOcheck/template.jpg')#image.image_path+image.image_name,0)##)#'template.jpg',0)
-    #templates[1] = cv2.imread("C:/Users/Patrick Liedtke/github/ICAOcheck/brille2.jpg",0)
-    #templates[2] = cv2.imread("C:/Users/Patrick Liedtke/github/ICAOcheck/brille3.jpg",0)
-    #templates[3] = cv2.imread("C:/Users/Patrick Liedtke/github/ICAOcheck/brille4.jpg",0)
+    #get template data - for the future we can read an array of templates
+    #ToDo: change the filepath
     template = cv2.imread("C:/Users/Patrick Liedtke/github/ICAOcheck/brille3.jpg",0)
     #for template in templates:
     w, h = img.shape[::-1]
-    #template.astype(0)
-    # All the 6 methods for comparison in a list
-    #methods = ['cv.TM_CCOEFF', 'cv.TM_CCOEFF_NORMED', 'cv.TM_CCORR',
-    #            'cv.TM_CCORR_NORMED', 'cv.TM_SQDIFF', 'cv.TM_SQDIFF_NORMED']
-    #for meth in methods:
     img = img2.copy()
+    #we use TM_CCORR_NORMED as template matching method
     method = eval('cv2.TM_CCORR_NORMED')
-        # Apply template Matching
+    # Apply template Matching
     res = cv2.matchTemplate(img,template,method)
+    #get the minimum and maximum point value or location of the result
     min_val, max_val, min_loc, max_loc = cv2.minMaxLoc(res)
-    if max_val > val:
-        val = max_val
+    #show the result after template matching with rectagle where the template is located
 
-    # If the method is TM_SQDIFF or TM_SQDIFF_NORMED, take minimum
-    # if method in [cv.TM_SQDIFF, cv.TM_SQDIFF_NORMED]:
-    #     top_left = min_loc
-    # else:
-    #top_left = max_val#max_loc
-    if val >= 0.995:
-        return True
-    else:
-        return False
+    #top_left = max_loc
     # bottom_right = (top_left[0] + w, top_left[1] + h)
     # cv2.rectangle(img,top_left, bottom_right, 255, 2)
     # plt.subplot(121),plt.imshow(res,cmap = 'gray')
@@ -97,10 +70,15 @@ def checkExistenceOfGlasses(image):
     # plt.title('Detected Point'), plt.xticks([]), plt.yticks([])
     # plt.suptitle('cv2.TM_CCORR_NORMED')
     # plt.show()
-    # return False
+
+    #return whether the person wear glasses (true) or not (false)
+    if max_val >= 0.99:
+        return True
+    else:
+        return False
 
 def checkEyeVisibility(image,shape):
-    #ToDo check the visibility of the eyes when the person wear glasses
+
     #get image data
     image_data = mpimg.imread(image.image_path + image.image_name)
 
@@ -131,9 +109,6 @@ def checkEyeVisibility(image,shape):
         i = i+1
         counter = counter+1
 
-    text = str(right_eye_points[1][0])
-    text2 = str(right_eye_points[1][1])
-
     #lowest face point (middle)
     point8 = (int(shape[8][0]), int(shape[8][1]))
     #highest face point (middle of the left eyebrow)
@@ -158,6 +133,7 @@ def checkEyeVisibility(image,shape):
     #set the height in relation
     bothEyeCheck2 = abs(height39_42/height_8_24)
 
+    #check whether the eyes are visble (true) or not (false)
     if leftEyeLeftRightCheck <= 0.027 and rightEyeLeftRightCheck <= 0.027:
         if bothEyeCheck1 <= 0.037 and bothEyeCheck2 <= 0.023:
             eyes_visibility = True
@@ -166,8 +142,5 @@ def checkEyeVisibility(image,shape):
     else:
         eyes_visibility = False
 
-    #zahl1 = str(rightEyeLeftRightCheck)
-    #zahl2 = str(leftEyeLeftRightCheck)
-    #zahl3 = str(bothEyeCheck1)
-    #zahl4 = str(bothEyeCheck2)
+    #return the value
     return eyes_visibility
