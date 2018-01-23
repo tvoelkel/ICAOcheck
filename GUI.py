@@ -1,3 +1,17 @@
+'''/*******************************************************
+ * Copyright (C) 2017-2018 
+ * Patrick Liedtke, Tim Krusch, Tom Krusch, Tobias Völkel 
+ * <patrick.liedtke@st.ovgu.de>
+ * <tim.krusch@st.ovgu.de>
+ * <tom.krusch@st.ovgu.de>
+ * <tobias.voelkel@st.ovgu.de>
+ * 
+ * This file is part of ICAO Check.
+ * 
+ * ICAO Check can not be copied and/or distributed without the express
+ * permission of Patrick Liedtke, Tim Krusch, Tom Krusch, Tobias Völkel
+ *******************************************************/'''
+
 from tkinter import *
 from tkinter.filedialog import askopenfilename
 from tkinter.messagebox import showerror

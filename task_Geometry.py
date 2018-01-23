@@ -1,3 +1,12 @@
+'''/*******************************************************
+ * Copyright (C) 2017-2018 Tom Krusch <tom.krusch@st.ovgu.de>
+ * 
+ * This file is part of ICAO Check.
+ * 
+ * ICAO Check can not be copied and/or distributed without the express
+ * permission of Tom Krusch
+ *******************************************************/'''
+
 import cv2
 import numpy as  np
 import os
