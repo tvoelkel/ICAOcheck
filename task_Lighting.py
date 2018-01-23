@@ -139,7 +139,7 @@ def colorCheck(image, rectangles):
     cielab_a_all_mean = np.mean(cielab_a) - 128
     cielab_b_all_mean = np.mean(cielab_b) - 128
 
-    if cielab_a_all_mean >= 5 and cielab_a_all_mean <=35 and cielab_b_all_mean >= 5 and cielab_a_all_mean <= 35:
+    if cielab_a_all_mean >= 5 and cielab_a_all_mean <=25 and cielab_b_all_mean >= 5 and cielab_a_all_mean <= 35:
         image.matching_results["Color"] = "Passed."
     else:
         image.matching_results["Color"] = "Unnatural skin tone. CIELAB a* = " + str(round(cielab_a_all_mean, 2)) + ", b* = " + str(round(cielab_b_all_mean, 2)) + "."
