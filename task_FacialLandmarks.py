@@ -1,12 +1,3 @@
-'''/*******************************************************
- * Copyright (C) 2017-2018 Patrick Liedtke <patrick.liedtke@st.ovgu.de>
- *
- * This file is part of ICAO Check.
- *
- * ICAO Check can not be copied and/or distributed without the express
- * permission of Patrick Liedtke
- *******************************************************/'''
-
 import dlib
 import cv2
 import os
@@ -32,7 +23,7 @@ def plotFacialLandmarks(imagelist):
 
             #get every facial landmark
             point =  (int(shape[i][0]), int(shape[i][1]))
-            #set the landmark on this point with radius = 4 and red colour
+            #set the landmark on this point with rad
             cv2.circle(image_data,(point[0],point[1]), 4, (0,0,255), -1)
 
         #show every image with facial landmarks
