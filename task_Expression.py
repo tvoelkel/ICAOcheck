@@ -12,69 +12,17 @@ from skimage import io
 #this function check wheter the expression is neutral
 def checkExpression(imagelist):
     for image in imagelist:
-        #image.matching_type_list.append("Expression Check: ")
-        #image.matching_score_list.append(image.image_name)
+
+        #for every image it will check whether a face is detected
         if not image.facial_landmarks_error:
             image.matching_results["Expression"] =  _checkExpression(image, image.facial_landmarks)
         else:
             image.matching_results["Expression"] = "Failed: Number of detected faces != 1"
 
-        """
-        image_data = io.imread(image.image_path + image.image_name)
-
-        detector = dlib.get_frontal_face_detector()
-        predicator = dlib.shape_predictor()
-        #win = dlib.image_window()
-        #print("Processing file: {}".format(image.image_path + image.image_name))
-
-        #ToDo get the facial landmarks
-        # The 1 in the second argument indicates that we should upsample the image
-        # 1 time.  This will make everything bigger and allow us to detect more
-        # faces.
-        dets = detector(image_data, 1)
-        print("Number of faces detected: {}".format(len(dets)))
-        for i, d in enumerate(dets):
-            print("Detection {}: Left: {} Top: {} Right: {} Bottom: {}".format(
-                i, d.left(), d.top(), d.right(), d.bottom()))
-        #win.clear_overlay()
-        #win.set_image(image_data)
-        #win.add_overlay(dets)
-        only for testing
-        point_a = [2,3]
-        point_b = [2,2]
-        distance(point_a,point_b)
-
-
-        #only for testing
-        close_mouth = True
-        no_smile = True
-        no_raisingEyebrows = True
-
-        #preparation for close close mouth
-
-        #calculate the between_lips distance and the thick of the lower lip
-        #between_lips = distance()
-        #lower_lip = distance()
-
-        #check whether the mouth is closed
-        #if 2*between_lips<=lower_lip:
-        #    close_mouth = True
-
-        #when all 3 characteristics are true, we have a neutral expression
-        if close_mouth == True and no_smile == True and no_raisingEyebrows == True:
-            image.matching_results["Expression"]="Neutral expression"
-        #otherwise (when one of the characteristics is false), we have no neutral expression
-        elif close_mouth == False:
-            image.matching_results["Expression"]="No neutral expression, because the mouth is open"
-        elif no_raisingEyebrows == False:
-            image.matching_results["Expression"]="No neutral expression, because the eyebrows are raised"
-        elif no_smile == False:
-            image.matching_results["Expression"]="No neutral expression, because the person smile (no 100 percent security)"
-        """
 
 def _checkExpression(image, shape):
     #get image data
-    #image_data = cv2.imread(image.image_path + image.image_name)
+    image_data = cv2.imread(image.image_path + image.image_name)
 
     #shape[n][m]: n is the facial landmark from 0 to 67, m is the pixel-coordinate (0 = x-value, 1 = y-value)
     #description of n-values
@@ -144,6 +92,7 @@ def _checkExpression(image, shape):
     height54_62 = point62[1]-point54[1]
     #set this height in relation
     noSmileFeatureLeft = abs(height54_62/height_8_24)
+    #check whether the person smile or has another not neutral expression
     if noSmileFeature <= 0.023:
         if noSmileFeatureRight <=0.041 and noSmileFeatureLeft <=0.041:
             no_smile = True
@@ -191,6 +140,7 @@ def _checkExpression(image, shape):
     #set the average in relation
     raisingEyebrowFeatureLeft = averageEyebrowLeft/height_8_24
 
+    #check whether the eyebrows are raised or not
     if raisingEyebrowFeatureRight <= 0.0475 and raisingEyebrowFeatureLeft <= 0.0475:
         no_raisingEyebrows = True
     else:
@@ -207,20 +157,6 @@ def _checkExpression(image, shape):
     elif no_smile == False:
         output_text ="No neutral expression"
 
-    #zahl1 = str(point48[0])
-    #zahl2 = str(point48[1])
-    #zahl3 = str(point66[0])
-    #zahl4 = str(point66[1])
-    #zahl5 = str(point54[0])
-    #zahl6 = str(point54[1])
-    #zahl7 = str(relPoint62)
-    #zahl8 = str(relPoint66)
-    #zahl9 = str(mouthOpenFeature)
-    #zahl10 = str(noSmileFeatureRight)
-    #zahl11 = str(noSmileFeatureLeft)
-    #zahl12 = str(raisingEyebrowFeatureRight)
-    #zahl13 = str(raisingEyebrowFeatureLeft)
-    #zahl14 = str(noSmileFeature)
     return output_text
 
 #this function calculated the difference betwenn two points
