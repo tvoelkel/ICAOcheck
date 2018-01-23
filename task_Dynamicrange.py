@@ -9,29 +9,30 @@ from skimage import io
 
 from math import sqrt
 
+count = 0
+
+
 def checkDynamicRange(imagelist):
+
+    global count
+    countpics = 0
+
     for image in imagelist:
+        countpics += 1
         image.matching_results["Dynamic Range"] = _checkDynamicRange(image)
 
+    print("dynamic range pics:    {}".format(countpics))
+    print("dynamic range conform: {}".format(countpics-count))
 
 def _checkDynamicRange(image):
     
-    
-    #load image data
-        
-    image_data = io.imread(image.image_path + image.image_name)
-            
-    #print("Processing file: {}".format(image.image_path + image.image_name))
-    
-    """
-    if len(dets) == 0:
-        return "no Face detected"
-    if len(dets) > 1:
-        return "more than one Face detected"
-    """    
+    global count
 
+    #load image data 
+    image_data = io.imread(image.image_path + image.image_name)
     image_data_np = numpy.asarray(image_data)
 
+    #get face area
     leftEyeCenter = (int((image.facial_landmarks[43][0] + image.facial_landmarks[44][0] + image.facial_landmarks[46][0] + image.facial_landmarks[47][0]) / 4), int((image.facial_landmarks[43][1] + image.facial_landmarks[44][1] + image.facial_landmarks[46][1] + image.facial_landmarks[47][1]) / 4))
     rightEyeCenter = (int((image.facial_landmarks[37][0] + image.facial_landmarks[38][0] + image.facial_landmarks[40][0] + image.facial_landmarks[41][0]) / 4), int((image.facial_landmarks[37][1] + image.facial_landmarks[38][1] + image.facial_landmarks[40][1] + image.facial_landmarks[41][1]) / 4))
     M = (int((leftEyeCenter[0] + rightEyeCenter[0]) / 2), int((leftEyeCenter[1] + rightEyeCenter[1]) / 2))
@@ -40,18 +41,18 @@ def _checkDynamicRange(image):
 
     image_data_np = image_data_np[y_hairline : image.facial_landmarks[8][1] , image.facial_landmarks[0][0] : image.facial_landmarks[16][0]]
 
+    #split pictures into color chanels
     image_data_np_red = image_data_np[...,0]
     image_data_np_green = image_data_np[...,1]
     image_data_np_blue = image_data_np[...,2]
 
+    #get histogram
     hist_red = numpy.histogram(image_data_np_red,range(0, 256))
     hist_green = numpy.histogram(image_data_np_green,range(0, 256))
     hist_blue = numpy.histogram(image_data_np_blue,range(0, 256))
 
-    img = Image.fromarray( image_data_np_green)
-    img.show()
-
-
+    
+    #check dynamic range
     count_rgb = {"red":0,"green":0,"blue":0}
 
     for x in hist_red[0]:
@@ -69,6 +70,7 @@ def _checkDynamicRange(image):
     blue = False
 
 
+    #check if dynamic range over 50%
     if count_rgb["red"] >= 128:
         red = True
     if count_rgb["green"] >= 128:
@@ -76,14 +78,12 @@ def _checkDynamicRange(image):
     if count_rgb["blue"] >= 128:
         blue = True
       
-    #print(treshold)
-    #print("Check passed.\n Red: %.1f %%\n Green: %.1f %%\n Blue: %.1f %%\n " 
-    #        % ((count_rgb["red"]/256)*100 , (count_rgb["green"]/256)*100 ,(count_rgb["blue"]/256)*100))
 
     if red and green and blue:
         return ("Check passed.\n Red: %.1f %%\n Green: %.1f %%\n Blue: %.1f %%\n Intesity Variation" 
             % ((count_rgb["red"]/256)*100 , (count_rgb["green"]/256)*100 ,(count_rgb["blue"]/256)*100))
     else:
+        count += 1
         message = "Check failed.\n"
         if not red:
             message += ("Red only %.1f %%\n" % ((count_rgb["red"]/256)*100))
@@ -96,7 +96,7 @@ def _checkDynamicRange(image):
         if not blue:
             message += ("Blue only %.1f %%\n Intesity Variation" % ((count_rgb["blue"]/256)*100))
         else:
-            message += ("Blue: %.1f %%\n Intesity Variation" % ((count_rgb["Blue"]/256)*100))
+            message += ("Blue: %.1f %%\n Intesity Variation" % ((count_rgb["blue"]/256)*100))
 
         return message
         
