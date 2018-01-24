@@ -49,7 +49,8 @@ def checkExistenceOfGlasses(image):
     img2 = img.copy()
     #get template data - for the future we can read an array of templates
     #ToDo: change the filepath
-    template = cv2.imread("C:/Users/Patrick Liedtke/github/ICAOcheck/brille3.jpg",0)
+    #template = cv2.imread("C:/Users/Patrick Liedtke/github/ICAOcheck/brille3.jpg",0)
+    template = cv2.imread(os.path.realpath(__file__).replace('\\', '/').rsplit('/', 1)[0] + '/' + "brille3.jpg", 0)
     #for template in templates:
     w, h = img.shape[::-1]
     img = img2.copy()
